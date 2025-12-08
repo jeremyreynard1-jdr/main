@@ -581,6 +581,47 @@
             background: #667eea;
             color: white;
         }
+
+        /* List view controls */
+        .list-controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .list-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .list-control-group label {
+            font-weight: 600;
+            font-size: 13px;
+            color: #4a5568;
+        }
+
+        .list-control-group select {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            background: white;
+            color: #2d3748;
+            transition: all 0.2s;
+        }
+
+        .list-control-group select:hover {
+            border-color: #667eea;
+        }
+
+        .list-control-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -665,6 +706,39 @@
 
         <div class="list-view" id="listView">
             <h2 style="margin-bottom: 24px; color: #1a202c; font-size: 24px;">All Projects</h2>
+
+            <div class="list-controls">
+                <div class="list-control-group">
+                    <label for="listQuarterFilter">Filter by Quarter:</label>
+                    <select id="listQuarterFilter" onchange="renderListView()">
+                        <option value="all">All Quarters</option>
+                        <option value="Q1">Q1</option>
+                        <option value="Q2">Q2</option>
+                        <option value="Q3">Q3</option>
+                        <option value="Q4">Q4</option>
+                        <option value="Backlog">Backlog</option>
+                    </select>
+                </div>
+                <div class="list-control-group">
+                    <label for="listQuadrantFilter">Filter by Quadrant:</label>
+                    <select id="listQuadrantFilter" onchange="renderListView()">
+                        <option value="all">All Quadrants</option>
+                        <option value="q1">Quadrant 1</option>
+                        <option value="q2">Quadrant 2</option>
+                        <option value="q3">Quadrant 3</option>
+                        <option value="q4">Quadrant 4</option>
+                    </select>
+                </div>
+                <div class="list-control-group">
+                    <label for="listSort">Sort by:</label>
+                    <select id="listSort" onchange="renderListView()">
+                        <option value="quarter">Quarter</option>
+                        <option value="name">Name (A-Z)</option>
+                        <option value="quadrant">Quadrant</option>
+                    </select>
+                </div>
+            </div>
+
             <table class="project-table">
                 <thead>
                     <tr>
@@ -1085,13 +1159,38 @@
             const axisType = document.getElementById('axisType').value;
             const config = axisConfigs[axisType];
 
-            // Sort projects by quarter then name
-            const sortedProjects = [...projects].sort((a, b) => {
-                const quarterOrder = { 'Q1': 1, 'Q2': 2, 'Q3': 3, 'Q4': 4, 'Backlog': 5 };
-                const aOrder = quarterOrder[a.quarter] || 99;
-                const bOrder = quarterOrder[b.quarter] || 99;
-                if (aOrder !== bOrder) return aOrder - bOrder;
-                return a.name.localeCompare(b.name);
+            // Get filter and sort values
+            const quarterFilter = document.getElementById('listQuarterFilter').value;
+            const quadrantFilter = document.getElementById('listQuadrantFilter').value;
+            const sortBy = document.getElementById('listSort').value;
+
+            // Filter projects
+            let filteredProjects = [...projects];
+            if (quarterFilter !== 'all') {
+                filteredProjects = filteredProjects.filter(p => p.quarter === quarterFilter);
+            }
+            if (quadrantFilter !== 'all') {
+                filteredProjects = filteredProjects.filter(p => p.quadrant === quadrantFilter);
+            }
+
+            // Sort projects
+            const sortedProjects = filteredProjects.sort((a, b) => {
+                if (sortBy === 'quarter') {
+                    const quarterOrder = { 'Q1': 1, 'Q2': 2, 'Q3': 3, 'Q4': 4, 'Backlog': 5 };
+                    const aOrder = quarterOrder[a.quarter] || 99;
+                    const bOrder = quarterOrder[b.quarter] || 99;
+                    if (aOrder !== bOrder) return aOrder - bOrder;
+                    return a.name.localeCompare(b.name);
+                } else if (sortBy === 'name') {
+                    return a.name.localeCompare(b.name);
+                } else if (sortBy === 'quadrant') {
+                    const quadrantOrder = { 'q1': 1, 'q2': 2, 'q3': 3, 'q4': 4 };
+                    const aOrder = quadrantOrder[a.quadrant] || 99;
+                    const bOrder = quadrantOrder[b.quadrant] || 99;
+                    if (aOrder !== bOrder) return aOrder - bOrder;
+                    return a.name.localeCompare(b.name);
+                }
+                return 0;
             });
 
             sortedProjects.forEach(project => {
