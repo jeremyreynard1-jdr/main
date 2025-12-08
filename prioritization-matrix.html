@@ -482,8 +482,8 @@
                 <div class="control-group">
                     <label for="axisType">Prioritization Framework:</label>
                     <select id="axisType">
-                        <option value="talent">Top Talent: Ability to Win vs Size of Prize (Default)</option>
-                        <option value="impact-effort">Impact vs Level of Effort</option>
+                        <option value="impact-effort">Impact vs Level of Effort (Default)</option>
+                        <option value="talent">Ability to Win vs Impact</option>
                         <option value="value-complexity">Value vs Complexity</option>
                         <option value="urgency-importance">Urgency vs Importance</option>
                         <option value="impact-feasibility">Impact vs Feasibility</option>
@@ -619,7 +619,7 @@
         // Axis configurations
         const axisConfigs = {
             'talent': {
-                yAxis: 'High Size of Prize → Low Size of Prize',
+                yAxis: 'High Impact → Low Impact',
                 xAxis: 'Low Ability to Win → High Ability to Win',
                 q1: 'Big Bets',
                 q2: 'Home Runs',
