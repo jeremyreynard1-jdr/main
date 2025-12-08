@@ -742,6 +742,7 @@
             <table class="project-table">
                 <thead>
                     <tr>
+                        <th style="width: 50px;">#</th>
                         <th>Project Name</th>
                         <th>Quarter</th>
                         <th>Quadrant</th>
@@ -796,8 +797,7 @@
             { id: 7, name: "Manager Training/Certification", description: "AI-powered learning modules delivering world-class management training, with focus on equipping first-time managers with essential leadership skills.", quarter: "Q2", quadrant: "q1", x: 100, y: 100 },
             { id: 8, name: "Professional Community Finder (Glue Club)", description: "Curated directory connecting employees to external professional communities in their specialty (e.g., Glue Club for operators, Generalist World, RevOps Pacific) while maintaining information privacy.", quarter: "Q3", quadrant: "q4", x: 150, y: 150 },
             { id: 9, name: "LinkedIn Employee Branding Training", description: "Workshop series optimizing employee LinkedIn profiles to strengthen talent brand advocacy and generate qualified leads for company products.", quarter: "Q3", quadrant: "q1", x: 120, y: 180 },
-            { id: 10, name: "New Hire Hub", description: "Centralized onboarding resource continuously updated with latest company news, product updates, and tool documentation to accelerate new hire ramp-up time and product familiarity.", quarter: "Backlog", quadrant: "q1", x: 80, y: 220 },
-            { id: 11, name: "AI Agent Workflow Builder", description: "No-code platform enabling teams to create custom AI agents and automation workflows, reducing manual tasks and improving process efficiency across departments.", quarter: "Q1", quadrant: "q2", x: 130, y: 150 }
+            { id: 10, name: "AI Agent Workflow Builder", description: "No-code platform enabling teams to create custom AI agents and automation workflows, reducing manual tasks and improving process efficiency across departments.", quarter: "Q1", quadrant: "q2", x: 130, y: 150 }
         ];
 
         // Load projects from localStorage or use defaults
@@ -1193,8 +1193,13 @@
                 return 0;
             });
 
-            sortedProjects.forEach(project => {
+            sortedProjects.forEach((project, index) => {
                 const tr = document.createElement('tr');
+
+                // Number
+                const tdNum = document.createElement('td');
+                tdNum.innerHTML = `<span style="color: #718096; font-weight: 600;">${index + 1}</span>`;
+                tr.appendChild(tdNum);
 
                 // Project name
                 const tdName = document.createElement('td');
