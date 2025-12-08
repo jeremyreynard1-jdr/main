@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Projects Prioritization Matrix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .axis-toggle {
+            margin-bottom: 15px;
+        }
+
+        .axis-toggle label {
+            font-weight: 600;
+            margin-right: 10px;
+            color: #333;
+        }
+
+        select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 2px solid #667eea;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .add-item-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .add-item-section input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .add-item-section button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .add-item-section button:hover {
+            background: #5568d3;
+        }
+
+        .matrix-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .axis-labels {
+            position: relative;
+            width: 100%;
+            height: 600px;
+        }
+
+        .y-axis-label {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            font-weight: 700;
+            font-size: 18px;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .x-axis-label {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 700;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 2px;
+            background: #ccc;
+            height: 100%;
+            border: 2px solid #333;
+        }
+
+        .quadrant {
+            background: #f8f9fa;
+            padding: 20px;
+            position: relative;
+            min-height: 250px;
+            transition: background 0.3s;
+        }
+
+        .quadrant.drag-over {
+            background: #e3f2fd;
+            border: 2px dashed #667eea;
+        }
+
+        .quadrant-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .q1 { background: #c8e6c9; }
+        .q2 { background: #fff9c4; }
+        .q3 { background: #ffccbc; }
+        .q4 { background: #b3e5fc; }
+
+        .items-container {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: move;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            border-left: 4px solid #667eea;
+        }
+
+        .item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .item.dragging {
+            opacity: 0.5;
+        }
+
+        .item-text {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #d32f2f;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-content h2 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-content p {
+            margin-bottom: 25px;
+            color: #666;
+            font-size: 16px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .modal-buttons button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .confirm-btn {
+            background: #4caf50;
+            color: white;
+        }
+
+        .confirm-btn:hover {
+            background: #45a049;
+        }
+
+        .cancel-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .cancel-btn:hover {
+            background: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Team Projects Prioritization Matrix</h1>
+            <p>Organize and prioritize your people initiatives</p>
+        </header>
+
+        <div class="controls">
+            <div class="axis-toggle">
+                <label for="axisType">Prioritization Framework:</label>
+                <select id="axisType">
+                    <option value="impact-effort">Impact vs Level of Effort (Default)</option>
+                    <option value="value-complexity">Value vs Complexity</option>
+                    <option value="urgency-importance">Urgency vs Importance</option>
+                    <option value="impact-feasibility">Impact vs Feasibility</option>
+                </select>
+            </div>
+            <div class="add-item-section">
+                <input type="text" id="newItemInput" placeholder="Enter new project idea...">
+                <button onclick="addNewItem()">Add Project</button>
+            </div>
+        </div>
+
+        <div class="matrix-container">
+            <div class="axis-labels">
+                <div class="y-axis-label" id="yAxisLabel">High Impact → Low Impact</div>
+                <div class="x-axis-label" id="xAxisLabel">Low Effort → High Effort</div>
+
+                <div class="matrix">
+                    <div class="quadrant q1" data-quadrant="q1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                        <div class="quadrant-label" id="q1Label">Quick Wins</div>
+                        <div class="items-container" id="q1-items"></div>
+                    </div>
+
+                    <div class="quadrant q2" data-quadrant="q2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                        <div class="quadrant-label" id="q2Label">Major Projects</div>
+                        <div class="items-container" id="q2-items"></div>
+                    </div>
+
+                    <div class="quadrant q3" data-quadrant="q3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                        <div class="quadrant-label" id="q3Label">Fill-Ins</div>
+                        <div class="items-container" id="q3-items"></div>
+                    </div>
+
+                    <div class="quadrant q4" data-quadrant="q4" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
+                        <div class="quadrant-label" id="q4Label">Time Sinks</div>
+                        <div class="items-container" id="q4-items"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <h2>Confirm Move</h2>
+            <p id="confirmMessage">You moved it here - is that right?</p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="confirmMove()">Yes, keep it here</button>
+                <button class="cancel-btn" onclick="cancelMove()">No, undo</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initial projects data
+        let projects = [
+            { id: 1, name: "IPO readiness", quadrant: null },
+            { id: 2, name: "Virtual coffee chats", quadrant: null },
+            { id: 3, name: "Talent tap team loaner program", quadrant: null },
+            { id: 4, name: "Training (data driven university)", quadrant: null },
+            { id: 5, name: "Getting more people to use voice typing", quadrant: null }
+        ];
+
+        let nextId = 6;
+        let draggedItem = null;
+        let previousQuadrant = null;
+        let pendingMove = null;
+
+        // Axis configurations
+        const axisConfigs = {
+            'impact-effort': {
+                yAxis: 'High Impact → Low Impact',
+                xAxis: 'Low Effort → High Effort',
+                q1: 'Quick Wins',
+                q2: 'Major Projects',
+                q3: 'Fill-Ins',
+                q4: 'Time Sinks'
+            },
+            'value-complexity': {
+                yAxis: 'High Value → Low Value',
+                xAxis: 'Low Complexity → High Complexity',
+                q1: 'Quick Wins',
+                q2: 'Strategic Initiatives',
+                q3: 'Nice to Have',
+                q4: 'Avoid'
+            },
+            'urgency-importance': {
+                yAxis: 'High Importance → Low Importance',
+                xAxis: 'Low Urgency → High Urgency',
+                q1: 'Plan & Schedule',
+                q2: 'Do First',
+                q3: 'Delegate',
+                q4: 'Eliminate'
+            },
+            'impact-feasibility': {
+                yAxis: 'High Impact → Low Impact',
+                xAxis: 'High Feasibility → Low Feasibility',
+                q1: 'Do Now',
+                q2: 'Plan Carefully',
+                q3: 'Low Priority',
+                q4: 'Reconsider'
+            }
+        };
+
+        // Initialize
+        function init() {
+            renderAllItems();
+            updateAxisLabels();
+        }
+
+        // Update axis labels based on selected framework
+        function updateAxisLabels() {
+            const axisType = document.getElementById('axisType').value;
+            const config = axisConfigs[axisType];
+
+            document.getElementById('yAxisLabel').textContent = config.yAxis;
+            document.getElementById('xAxisLabel').textContent = config.xAxis;
+            document.getElementById('q1Label').textContent = config.q1;
+            document.getElementById('q2Label').textContent = config.q2;
+            document.getElementById('q3Label').textContent = config.q3;
+            document.getElementById('q4Label').textContent = config.q4;
+        }
+
+        // Listen for axis changes
+        document.getElementById('axisType').addEventListener('change', updateAxisLabels);
+
+        // Render all items
+        function renderAllItems() {
+            // Clear all quadrants
+            ['q1', 'q2', 'q3', 'q4'].forEach(q => {
+                const container = document.getElementById(`${q}-items`);
+                container.innerHTML = '';
+            });
+
+            // Render items in their quadrants
+            projects.forEach(project => {
+                if (project.quadrant) {
+                    const container = document.getElementById(`${project.quadrant}-items`);
+                    container.appendChild(createItemElement(project));
+                } else {
+                    // If no quadrant assigned, put in q1 by default
+                    const container = document.getElementById('q1-items');
+                    container.appendChild(createItemElement(project));
+                }
+            });
+        }
+
+        // Create item element
+        function createItemElement(project) {
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.draggable = true;
+            div.dataset.id = project.id;
+            div.ondragstart = drag;
+            div.ondragend = dragEnd;
+
+            const text = document.createElement('span');
+            text.className = 'item-text';
+            text.textContent = project.name;
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = () => deleteItem(project.id);
+
+            div.appendChild(text);
+            div.appendChild(deleteBtn);
+
+            return div;
+        }
+
+        // Drag and drop functions
+        function drag(e) {
+            draggedItem = e.target;
+            previousQuadrant = e.target.parentElement.parentElement.dataset.quadrant;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.innerHTML);
+        }
+
+        function dragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+
+        function allowDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+            e.dataTransfer.dropEffect = 'move';
+        }
+
+        function dragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+
+            const newQuadrant = e.currentTarget.dataset.quadrant;
+
+            if (draggedItem && newQuadrant !== previousQuadrant) {
+                // Store pending move
+                pendingMove = {
+                    item: draggedItem,
+                    newQuadrant: newQuadrant,
+                    previousQuadrant: previousQuadrant
+                };
+
+                // Show confirmation modal
+                const itemName = draggedItem.querySelector('.item-text').textContent;
+                const quadrantLabel = document.getElementById(`${newQuadrant}Label`).textContent;
+                document.getElementById('confirmMessage').textContent =
+                    `You moved "${itemName}" to "${quadrantLabel}" - is that right?`;
+                document.getElementById('confirmModal').classList.add('active');
+            }
+        }
+
+        function confirmMove() {
+            if (pendingMove) {
+                const { item, newQuadrant } = pendingMove;
+                const itemId = parseInt(item.dataset.id);
+
+                // Update project data
+                const project = projects.find(p => p.id === itemId);
+                if (project) {
+                    project.quadrant = newQuadrant;
+                }
+
+                // Move the item
+                const container = document.getElementById(`${newQuadrant}-items`);
+                container.appendChild(item);
+
+                pendingMove = null;
+            }
+
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        function cancelMove() {
+            if (pendingMove) {
+                const { item, previousQuadrant } = pendingMove;
+
+                // Move back to original quadrant
+                if (previousQuadrant) {
+                    const container = document.getElementById(`${previousQuadrant}-items`);
+                    container.appendChild(item);
+                }
+
+                pendingMove = null;
+            }
+
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        // Add new item
+        function addNewItem() {
+            const input = document.getElementById('newItemInput');
+            const name = input.value.trim();
+
+            if (name) {
+                const newProject = {
+                    id: nextId++,
+                    name: name,
+                    quadrant: 'q1' // Default to Quick Wins
+                };
+
+                projects.push(newProject);
+
+                const container = document.getElementById('q1-items');
+                container.appendChild(createItemElement(newProject));
+
+                input.value = '';
+            }
+        }
+
+        // Delete item
+        function deleteItem(id) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                projects = projects.filter(p => p.id !== id);
+                renderAllItems();
+            }
+        }
+
+        // Allow Enter key to add item
+        document.getElementById('newItemInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addNewItem();
+            }
+        });
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
