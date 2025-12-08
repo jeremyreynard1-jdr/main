@@ -40,6 +40,20 @@
             font-size: 1.1em;
             opacity: 0.95;
             font-weight: 300;
+            margin-bottom: 8px;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9em;
+            opacity: 0.85;
+            border-bottom: 1px solid rgba(255,255,255,0.5);
+            transition: opacity 0.2s;
+        }
+
+        header a:hover {
+            opacity: 1;
         }
 
         .controls {
@@ -50,18 +64,29 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
 
-        .axis-toggle {
+        .controls-row {
+            display: flex;
+            gap: 20px;
             margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        .axis-toggle label {
+        .control-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .control-group label {
             font-weight: 600;
             margin-right: 12px;
             color: #1a202c;
             font-size: 15px;
+            display: block;
+            margin-bottom: 8px;
         }
 
         select {
+            width: 100%;
             padding: 10px 16px;
             border-radius: 8px;
             border: 2px solid #e2e8f0;
@@ -90,7 +115,8 @@
         }
 
         .add-item-section input,
-        .add-item-section textarea {
+        .add-item-section textarea,
+        .add-item-section select {
             padding: 12px 16px;
             border: 2px solid #e2e8f0;
             border-radius: 8px;
@@ -100,22 +126,11 @@
         }
 
         .add-item-section input:focus,
-        .add-item-section textarea:focus {
+        .add-item-section textarea:focus,
+        .add-item-section select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .add-item-section input {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        .add-item-section textarea {
-            flex: 1;
-            min-width: 200px;
-            min-height: 70px;
-            resize: vertical;
         }
 
         .add-item-section button {
@@ -146,6 +161,26 @@
             gap: 12px;
             flex: 1;
             min-width: 300px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-row input {
+            flex: 2;
+        }
+
+        .input-row select {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            min-height: 70px;
+            resize: vertical;
         }
 
         .matrix-container {
@@ -223,9 +258,9 @@
             z-index: 10;
         }
 
-        .q1 { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
-        .q2 { background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); }
-        .q3 { background: linear-gradient(135deg, #fab1a0 0%, #fd79a8 100%); }
+        .q1 { background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%); }
+        .q2 { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
+        .q3 { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); }
         .q4 { background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%); }
 
         .item {
@@ -256,16 +291,25 @@
             transform: rotate(3deg);
         }
 
-        .item-text {
+        .item-content {
             flex: 1;
+            cursor: pointer;
+        }
+
+        .item-text {
             font-size: 14px;
             color: #2d3748;
             font-weight: 500;
-            cursor: pointer;
             line-height: 1.4;
         }
 
-        .item-text:hover {
+        .item-quarter {
+            font-size: 11px;
+            color: #718096;
+            margin-top: 2px;
+        }
+
+        .item-content:hover .item-text {
             color: #667eea;
         }
 
@@ -350,7 +394,8 @@
         }
 
         .modal-content input,
-        .modal-content textarea {
+        .modal-content textarea,
+        .modal-content select {
             width: 100%;
             padding: 12px 16px;
             border: 2px solid #e2e8f0;
@@ -362,7 +407,8 @@
         }
 
         .modal-content input:focus,
-        .modal-content textarea:focus {
+        .modal-content textarea:focus,
+        .modal-content select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -421,26 +467,6 @@
         .cancel-btn:hover {
             background: #cbd5e0;
         }
-
-        .detail-section {
-            margin-bottom: 20px;
-        }
-
-        .detail-label {
-            font-weight: 600;
-            color: #4a5568;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .detail-content {
-            color: #2d3748;
-            line-height: 1.6;
-            padding: 12px;
-            background: #f7fafc;
-            border-radius: 8px;
-            font-size: 14px;
-        }
     </style>
 </head>
 <body>
@@ -448,22 +474,46 @@
         <header>
             <h1>Team Projects Prioritization Matrix</h1>
             <p>Organize and prioritize your people initiatives</p>
+            <a href="https://blueprints.guide/posts/top-talent-2x2s" target="_blank">Based on Top Talent 2x2s Framework</a>
         </header>
 
         <div class="controls">
-            <div class="axis-toggle">
-                <label for="axisType">Prioritization Framework:</label>
-                <select id="axisType">
-                    <option value="impact-effort">Impact vs Level of Effort (Default)</option>
-                    <option value="value-complexity">Value vs Complexity</option>
-                    <option value="urgency-importance">Urgency vs Importance</option>
-                    <option value="impact-feasibility">Impact vs Feasibility</option>
-                </select>
+            <div class="controls-row">
+                <div class="control-group">
+                    <label for="axisType">Prioritization Framework:</label>
+                    <select id="axisType">
+                        <option value="talent">Top Talent: Ability to Win vs Size of Prize (Default)</option>
+                        <option value="impact-effort">Impact vs Level of Effort</option>
+                        <option value="value-complexity">Value vs Complexity</option>
+                        <option value="urgency-importance">Urgency vs Importance</option>
+                        <option value="impact-feasibility">Impact vs Feasibility</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="quarterFilter">Filter by Quarter:</label>
+                    <select id="quarterFilter" onchange="filterByQuarter()">
+                        <option value="all">All Projects</option>
+                        <option value="backlog">Backlog</option>
+                        <option value="Q1">Q1</option>
+                        <option value="Q2">Q2</option>
+                        <option value="Q3">Q3</option>
+                        <option value="Q4">Q4</option>
+                    </select>
+                </div>
             </div>
             <div class="add-item-section">
                 <div class="input-group">
-                    <input type="text" id="newItemInput" placeholder="Project name...">
-                    <textarea id="newItemDescription" placeholder="Description (optional)..."></textarea>
+                    <div class="input-row">
+                        <input type="text" id="newItemInput" placeholder="Project name...">
+                        <select id="newItemQuarter">
+                            <option value="backlog">Backlog</option>
+                            <option value="Q1">Q1</option>
+                            <option value="Q2">Q2</option>
+                            <option value="Q3">Q3</option>
+                            <option value="Q4">Q4</option>
+                        </select>
+                    </div>
+                    <textarea id="newItemDescription" placeholder="Description (optional) - e.g., 'Connects to Asana board #123'"></textarea>
                 </div>
                 <button onclick="addNewItem()">Add Project</button>
             </div>
@@ -471,24 +521,24 @@
 
         <div class="matrix-container">
             <div class="axis-labels">
-                <div class="y-axis-label" id="yAxisLabel">High Impact → Low Impact</div>
-                <div class="x-axis-label" id="xAxisLabel">Low Effort → High Effort</div>
+                <div class="y-axis-label" id="yAxisLabel">High Size of Prize → Low Size of Prize</div>
+                <div class="x-axis-label" id="xAxisLabel">Low Ability to Win → High Ability to Win</div>
 
                 <div class="matrix">
                     <div class="quadrant q1" data-quadrant="q1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
-                        <div class="quadrant-label" id="q1Label">Quick Wins</div>
+                        <div class="quadrant-label" id="q1Label">Big Bets</div>
                     </div>
 
                     <div class="quadrant q2" data-quadrant="q2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
-                        <div class="quadrant-label" id="q2Label">Major Projects</div>
+                        <div class="quadrant-label" id="q2Label">Home Runs</div>
                     </div>
 
                     <div class="quadrant q3" data-quadrant="q3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
-                        <div class="quadrant-label" id="q3Label">Fill-Ins</div>
+                        <div class="quadrant-label" id="q3Label">Junk</div>
                     </div>
 
                     <div class="quadrant q4" data-quadrant="q4" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
-                        <div class="quadrant-label" id="q4Label">Time Sinks</div>
+                        <div class="quadrant-label" id="q4Label">Small Wins</div>
                     </div>
                 </div>
             </div>
@@ -504,8 +554,18 @@
                 <input type="text" id="editName">
             </div>
             <div class="form-group">
+                <label for="editQuarter">Quarter</label>
+                <select id="editQuarter">
+                    <option value="backlog">Backlog</option>
+                    <option value="Q1">Q1</option>
+                    <option value="Q2">Q2</option>
+                    <option value="Q3">Q3</option>
+                    <option value="Q4">Q4</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="editDescription">Description</label>
-                <textarea id="editDescription"></textarea>
+                <textarea id="editDescription" placeholder="e.g., 'Connects to Asana board #123'"></textarea>
             </div>
             <div class="modal-buttons">
                 <button class="cancel-btn" onclick="closeEdit()">Cancel</button>
@@ -517,11 +577,11 @@
     <script>
         // Default projects data
         const defaultProjects = [
-            { id: 1, name: "IPO readiness", description: "", quadrant: "q1", x: 50, y: 50 },
-            { id: 2, name: "Virtual coffee chats", description: "", quadrant: "q1", x: 50, y: 120 },
-            { id: 3, name: "Talent tap team loaner program", description: "", quadrant: "q1", x: 50, y: 190 },
-            { id: 4, name: "Training (data driven university)", description: "", quadrant: "q2", x: 50, y: 50 },
-            { id: 5, name: "Getting more people to use voice typing", description: "", quadrant: "q2", x: 50, y: 120 }
+            { id: 1, name: "IPO readiness", description: "", quarter: "Q1", quadrant: "q2", x: 50, y: 50 },
+            { id: 2, name: "Virtual coffee chats", description: "", quarter: "Q2", quadrant: "q4", x: 50, y: 120 },
+            { id: 3, name: "Talent tap team loaner program", description: "", quarter: "Q1", quadrant: "q2", x: 150, y: 50 },
+            { id: 4, name: "Training (data driven university)", description: "", quarter: "Q2", quadrant: "q1", x: 50, y: 50 },
+            { id: 5, name: "Getting more people to use voice typing", description: "", quarter: "backlog", quadrant: "q4", x: 50, y: 120 }
         ];
 
         // Load projects from localStorage or use defaults
@@ -530,13 +590,16 @@
         let draggedItem = null;
         let dragOffset = { x: 0, y: 0 };
         let currentEditId = null;
+        let currentFilter = 'all';
 
         // Load projects from localStorage
         function loadProjects() {
             const saved = localStorage.getItem('prioritizationMatrix');
             if (saved) {
                 try {
-                    return JSON.parse(saved);
+                    const loaded = JSON.parse(saved);
+                    // Add quarter field to old projects if missing
+                    return loaded.map(p => ({ quarter: 'backlog', ...p }));
                 } catch (e) {
                     console.error('Error loading saved data:', e);
                     return [...defaultProjects];
@@ -552,6 +615,14 @@
 
         // Axis configurations
         const axisConfigs = {
+            'talent': {
+                yAxis: 'High Size of Prize → Low Size of Prize',
+                xAxis: 'Low Ability to Win → High Ability to Win',
+                q1: 'Big Bets',
+                q2: 'Home Runs',
+                q3: 'Junk',
+                q4: 'Small Wins'
+            },
             'impact-effort': {
                 yAxis: 'High Impact → Low Impact',
                 xAxis: 'Low Effort → High Effort',
@@ -608,6 +679,12 @@
         // Listen for axis changes
         document.getElementById('axisType').addEventListener('change', updateAxisLabels);
 
+        // Filter by quarter
+        function filterByQuarter() {
+            currentFilter = document.getElementById('quarterFilter').value;
+            renderAllItems();
+        }
+
         // Render all items
         function renderAllItems() {
             // Clear all quadrants
@@ -617,8 +694,13 @@
                 items.forEach(item => item.remove());
             });
 
-            // Render items in their quadrants
+            // Render items in their quadrants (filtered)
             projects.forEach(project => {
+                // Apply filter
+                if (currentFilter !== 'all' && project.quarter !== currentFilter) {
+                    return; // Skip this project
+                }
+
                 const quadrant = document.querySelector(`[data-quadrant="${project.quadrant}"]`);
                 if (quadrant) {
                     const itemEl = createItemElement(project);
@@ -636,13 +718,23 @@
             div.style.left = project.x + 'px';
             div.style.top = project.y + 'px';
 
-            const text = document.createElement('span');
-            text.className = 'item-text';
-            text.textContent = project.name;
-            text.onclick = (e) => {
+            const content = document.createElement('div');
+            content.className = 'item-content';
+            content.onclick = (e) => {
                 e.stopPropagation();
                 showEdit(project.id);
             };
+
+            const text = document.createElement('div');
+            text.className = 'item-text';
+            text.textContent = project.name;
+
+            const quarter = document.createElement('div');
+            quarter.className = 'item-quarter';
+            quarter.textContent = project.quarter || 'Backlog';
+
+            content.appendChild(text);
+            content.appendChild(quarter);
 
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-btn';
@@ -652,7 +744,7 @@
                 deleteItem(project.id);
             };
 
-            div.appendChild(text);
+            div.appendChild(content);
             div.appendChild(deleteBtn);
 
             // Drag events
@@ -730,15 +822,18 @@
         function addNewItem() {
             const nameInput = document.getElementById('newItemInput');
             const descInput = document.getElementById('newItemDescription');
+            const quarterInput = document.getElementById('newItemQuarter');
             const name = nameInput.value.trim();
             const description = descInput.value.trim();
+            const quarter = quarterInput.value;
 
             if (name) {
                 const newProject = {
                     id: nextId++,
                     name: name,
                     description: description,
-                    quadrant: 'q1',
+                    quarter: quarter,
+                    quadrant: 'q2',
                     x: 50 + (Math.random() * 100),
                     y: 50 + (Math.random() * 100)
                 };
@@ -746,12 +841,16 @@
                 projects.push(newProject);
                 saveProjects(); // Save after adding
 
-                const quadrant = document.querySelector('[data-quadrant="q1"]');
-                const itemEl = createItemElement(newProject);
-                quadrant.appendChild(itemEl);
+                // Only render if it matches current filter
+                if (currentFilter === 'all' || currentFilter === quarter) {
+                    const quadrant = document.querySelector('[data-quadrant="q2"]');
+                    const itemEl = createItemElement(newProject);
+                    quadrant.appendChild(itemEl);
+                }
 
                 nameInput.value = '';
                 descInput.value = '';
+                quarterInput.value = 'backlog';
             }
         }
 
@@ -771,6 +870,7 @@
 
             currentEditId = id;
             document.getElementById('editName').value = project.name;
+            document.getElementById('editQuarter').value = project.quarter || 'backlog';
             document.getElementById('editDescription').value = project.description || '';
             document.getElementById('editModal').classList.add('active');
         }
@@ -782,6 +882,7 @@
             const project = projects.find(p => p.id === currentEditId);
             if (project) {
                 project.name = document.getElementById('editName').value.trim();
+                project.quarter = document.getElementById('editQuarter').value;
                 project.description = document.getElementById('editDescription').value.trim();
                 saveProjects(); // Save after editing
                 renderAllItems();
