@@ -63,15 +63,29 @@
         .add-item-section {
             display: flex;
             gap: 10px;
-            align-items: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
         }
 
-        .add-item-section input {
-            flex: 1;
+        .add-item-section input,
+        .add-item-section textarea {
             padding: 10px;
             border: 2px solid #ddd;
             border-radius: 5px;
             font-size: 14px;
+            font-family: inherit;
+        }
+
+        .add-item-section input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .add-item-section textarea {
+            flex: 1;
+            min-width: 200px;
+            min-height: 60px;
+            resize: vertical;
         }
 
         .add-item-section button {
@@ -159,6 +173,7 @@
             padding: 5px 10px;
             border-radius: 5px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            z-index: 10;
         }
 
         .q1 { background: #c8e6c9; }
@@ -166,50 +181,53 @@
         .q3 { background: #ffccbc; }
         .q4 { background: #b3e5fc; }
 
-        .items-container {
-            margin-top: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
         .item {
+            position: absolute;
             background: white;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border-radius: 8px;
             cursor: move;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            transition: all 0.3s;
+            gap: 8px;
+            transition: box-shadow 0.3s;
             border-left: 4px solid #667eea;
+            min-width: 120px;
+            max-width: 250px;
         }
 
         .item:hover {
-            transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
         .item.dragging {
             opacity: 0.5;
+            z-index: 1000;
         }
 
         .item-text {
             flex: 1;
-            font-size: 14px;
+            font-size: 13px;
             color: #333;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .item-text:hover {
+            color: #667eea;
         }
 
         .delete-btn {
             background: #f44336;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 4px 8px;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             transition: background 0.3s;
+            flex-shrink: 0;
         }
 
         .delete-btn:hover {
@@ -239,7 +257,9 @@
             padding: 30px;
             border-radius: 10px;
             max-width: 500px;
-            text-align: center;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
@@ -249,7 +269,7 @@
         }
 
         .modal-content p {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             color: #666;
             font-size: 16px;
         }
@@ -258,6 +278,7 @@
             display: flex;
             gap: 10px;
             justify-content: center;
+            margin-top: 20px;
         }
 
         .modal-buttons button {
@@ -287,6 +308,42 @@
         .cancel-btn:hover {
             background: #d32f2f;
         }
+
+        /* Details Modal */
+        .details-modal .modal-content {
+            text-align: left;
+        }
+
+        .details-modal h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .details-modal .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .details-modal .detail-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .details-modal .detail-content {
+            color: #666;
+            line-height: 1.6;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -307,7 +364,10 @@
                 </select>
             </div>
             <div class="add-item-section">
-                <input type="text" id="newItemInput" placeholder="Enter new project idea...">
+                <div class="input-group">
+                    <input type="text" id="newItemInput" placeholder="Project name...">
+                    <textarea id="newItemDescription" placeholder="Description (optional)..."></textarea>
+                </div>
                 <button onclick="addNewItem()">Add Project</button>
             </div>
         </div>
@@ -320,22 +380,18 @@
                 <div class="matrix">
                     <div class="quadrant q1" data-quadrant="q1" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
                         <div class="quadrant-label" id="q1Label">Quick Wins</div>
-                        <div class="items-container" id="q1-items"></div>
                     </div>
 
                     <div class="quadrant q2" data-quadrant="q2" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
                         <div class="quadrant-label" id="q2Label">Major Projects</div>
-                        <div class="items-container" id="q2-items"></div>
                     </div>
 
                     <div class="quadrant q3" data-quadrant="q3" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
                         <div class="quadrant-label" id="q3Label">Fill-Ins</div>
-                        <div class="items-container" id="q3-items"></div>
                     </div>
 
                     <div class="quadrant q4" data-quadrant="q4" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)">
                         <div class="quadrant-label" id="q4Label">Time Sinks</div>
-                        <div class="items-container" id="q4-items"></div>
                     </div>
                 </div>
             </div>
@@ -354,20 +410,44 @@
         </div>
     </div>
 
+    <!-- Details Modal -->
+    <div class="modal details-modal" id="detailsModal">
+        <div class="modal-content">
+            <h2 id="detailsTitle">Project Details</h2>
+            <div class="detail-section">
+                <div class="detail-label">Name:</div>
+                <div class="detail-content" id="detailsName"></div>
+            </div>
+            <div class="detail-section">
+                <div class="detail-label">Description:</div>
+                <div class="detail-content" id="detailsDescription"></div>
+            </div>
+            <div class="detail-section">
+                <div class="detail-label">Quadrant:</div>
+                <div class="detail-content" id="detailsQuadrant"></div>
+            </div>
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="closeDetails()">Close</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Initial projects data
         let projects = [
-            { id: 1, name: "IPO readiness", quadrant: null },
-            { id: 2, name: "Virtual coffee chats", quadrant: null },
-            { id: 3, name: "Talent tap team loaner program", quadrant: null },
-            { id: 4, name: "Training (data driven university)", quadrant: null },
-            { id: 5, name: "Getting more people to use voice typing", quadrant: null }
+            { id: 1, name: "IPO readiness", description: "", quadrant: "q1", x: 50, y: 50 },
+            { id: 2, name: "Virtual coffee chats", description: "", quadrant: "q1", x: 50, y: 120 },
+            { id: 3, name: "Talent tap team loaner program", description: "", quadrant: "q1", x: 50, y: 190 },
+            { id: 4, name: "Training (data driven university)", description: "", quadrant: "q2", x: 50, y: 50 },
+            { id: 5, name: "Getting more people to use voice typing", description: "", quadrant: "q2", x: 50, y: 120 }
         ];
 
         let nextId = 6;
         let draggedItem = null;
         let previousQuadrant = null;
+        let previousPosition = null;
         let pendingMove = null;
+        let dragOffset = { x: 0, y: 0 };
 
         // Axis configurations
         const axisConfigs = {
@@ -431,19 +511,18 @@
         function renderAllItems() {
             // Clear all quadrants
             ['q1', 'q2', 'q3', 'q4'].forEach(q => {
-                const container = document.getElementById(`${q}-items`);
-                container.innerHTML = '';
+                const quadrant = document.querySelector(`[data-quadrant="${q}"]`);
+                // Remove all items but keep the label
+                const items = quadrant.querySelectorAll('.item');
+                items.forEach(item => item.remove());
             });
 
             // Render items in their quadrants
             projects.forEach(project => {
-                if (project.quadrant) {
-                    const container = document.getElementById(`${project.quadrant}-items`);
-                    container.appendChild(createItemElement(project));
-                } else {
-                    // If no quadrant assigned, put in q1 by default
-                    const container = document.getElementById('q1-items');
-                    container.appendChild(createItemElement(project));
+                const quadrant = document.querySelector(`[data-quadrant="${project.quadrant}"]`);
+                if (quadrant) {
+                    const itemEl = createItemElement(project);
+                    quadrant.appendChild(itemEl);
                 }
             });
         }
@@ -454,20 +533,28 @@
             div.className = 'item';
             div.draggable = true;
             div.dataset.id = project.id;
-            div.ondragstart = drag;
-            div.ondragend = dragEnd;
+            div.style.left = project.x + 'px';
+            div.style.top = project.y + 'px';
 
             const text = document.createElement('span');
             text.className = 'item-text';
             text.textContent = project.name;
+            text.onclick = () => showDetails(project.id);
 
             const deleteBtn = document.createElement('button');
             deleteBtn.className = 'delete-btn';
             deleteBtn.textContent = 'Delete';
-            deleteBtn.onclick = () => deleteItem(project.id);
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                deleteItem(project.id);
+            };
 
             div.appendChild(text);
             div.appendChild(deleteBtn);
+
+            // Drag events
+            div.addEventListener('dragstart', drag);
+            div.addEventListener('dragend', dragEnd);
 
             return div;
         }
@@ -475,10 +562,17 @@
         // Drag and drop functions
         function drag(e) {
             draggedItem = e.target;
-            previousQuadrant = e.target.parentElement.parentElement.dataset.quadrant;
+            const project = projects.find(p => p.id === parseInt(draggedItem.dataset.id));
+            previousQuadrant = project.quadrant;
+            previousPosition = { x: project.x, y: project.y };
+
+            // Calculate offset from mouse to top-left of item
+            const rect = draggedItem.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+
             e.target.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', e.target.innerHTML);
         }
 
         function dragEnd(e) {
@@ -499,39 +593,56 @@
             e.preventDefault();
             e.currentTarget.classList.remove('drag-over');
 
+            if (!draggedItem) return;
+
             const newQuadrant = e.currentTarget.dataset.quadrant;
+            const rect = e.currentTarget.getBoundingClientRect();
 
-            if (draggedItem && newQuadrant !== previousQuadrant) {
-                // Store pending move
-                pendingMove = {
-                    item: draggedItem,
-                    newQuadrant: newQuadrant,
-                    previousQuadrant: previousQuadrant
-                };
+            // Calculate position relative to quadrant
+            const x = e.clientX - rect.left - dragOffset.x;
+            const y = e.clientY - rect.top - dragOffset.y;
 
-                // Show confirmation modal
-                const itemName = draggedItem.querySelector('.item-text').textContent;
-                const quadrantLabel = document.getElementById(`${newQuadrant}Label`).textContent;
-                document.getElementById('confirmMessage').textContent =
-                    `You moved "${itemName}" to "${quadrantLabel}" - is that right?`;
-                document.getElementById('confirmModal').classList.add('active');
-            }
+            // Constrain within quadrant bounds
+            const maxX = rect.width - draggedItem.offsetWidth;
+            const maxY = rect.height - draggedItem.offsetHeight;
+            const constrainedX = Math.max(0, Math.min(x, maxX));
+            const constrainedY = Math.max(40, Math.min(y, maxY)); // 40px to avoid label
+
+            // Store pending move
+            pendingMove = {
+                item: draggedItem,
+                newQuadrant: newQuadrant,
+                newPosition: { x: constrainedX, y: constrainedY },
+                previousQuadrant: previousQuadrant,
+                previousPosition: previousPosition
+            };
+
+            // Show confirmation modal
+            const itemName = draggedItem.querySelector('.item-text').textContent;
+            const quadrantLabel = document.getElementById(`${newQuadrant}Label`).textContent;
+            document.getElementById('confirmMessage').textContent =
+                `You moved "${itemName}" to "${quadrantLabel}" - is that right?`;
+            document.getElementById('confirmModal').classList.add('active');
         }
 
         function confirmMove() {
             if (pendingMove) {
-                const { item, newQuadrant } = pendingMove;
+                const { item, newQuadrant, newPosition } = pendingMove;
                 const itemId = parseInt(item.dataset.id);
 
                 // Update project data
                 const project = projects.find(p => p.id === itemId);
                 if (project) {
                     project.quadrant = newQuadrant;
+                    project.x = newPosition.x;
+                    project.y = newPosition.y;
                 }
 
-                // Move the item
-                const container = document.getElementById(`${newQuadrant}-items`);
-                container.appendChild(item);
+                // Move the item to new quadrant and position
+                const quadrant = document.querySelector(`[data-quadrant="${newQuadrant}"]`);
+                quadrant.appendChild(item);
+                item.style.left = newPosition.x + 'px';
+                item.style.top = newPosition.y + 'px';
 
                 pendingMove = null;
             }
@@ -541,13 +652,13 @@
 
         function cancelMove() {
             if (pendingMove) {
-                const { item, previousQuadrant } = pendingMove;
+                const { item, previousQuadrant, previousPosition } = pendingMove;
 
-                // Move back to original quadrant
-                if (previousQuadrant) {
-                    const container = document.getElementById(`${previousQuadrant}-items`);
-                    container.appendChild(item);
-                }
+                // Move back to original position
+                const quadrant = document.querySelector(`[data-quadrant="${previousQuadrant}"]`);
+                quadrant.appendChild(item);
+                item.style.left = previousPosition.x + 'px';
+                item.style.top = previousPosition.y + 'px';
 
                 pendingMove = null;
             }
@@ -557,22 +668,29 @@
 
         // Add new item
         function addNewItem() {
-            const input = document.getElementById('newItemInput');
-            const name = input.value.trim();
+            const nameInput = document.getElementById('newItemInput');
+            const descInput = document.getElementById('newItemDescription');
+            const name = nameInput.value.trim();
+            const description = descInput.value.trim();
 
             if (name) {
                 const newProject = {
                     id: nextId++,
                     name: name,
-                    quadrant: 'q1' // Default to Quick Wins
+                    description: description,
+                    quadrant: 'q1',
+                    x: 50 + (Math.random() * 100),
+                    y: 50 + (Math.random() * 100)
                 };
 
                 projects.push(newProject);
 
-                const container = document.getElementById('q1-items');
-                container.appendChild(createItemElement(newProject));
+                const quadrant = document.querySelector('[data-quadrant="q1"]');
+                const itemEl = createItemElement(newProject);
+                quadrant.appendChild(itemEl);
 
-                input.value = '';
+                nameInput.value = '';
+                descInput.value = '';
             }
         }
 
@@ -584,7 +702,27 @@
             }
         }
 
-        // Allow Enter key to add item
+        // Show details
+        function showDetails(id) {
+            const project = projects.find(p => p.id === id);
+            if (!project) return;
+
+            document.getElementById('detailsTitle').textContent = 'Project Details';
+            document.getElementById('detailsName').textContent = project.name;
+            document.getElementById('detailsDescription').textContent = project.description || 'No description provided';
+
+            const quadrantLabel = document.getElementById(`${project.quadrant}Label`).textContent;
+            document.getElementById('detailsQuadrant').textContent = quadrantLabel;
+
+            document.getElementById('detailsModal').classList.add('active');
+        }
+
+        // Close details modal
+        function closeDetails() {
+            document.getElementById('detailsModal').classList.remove('active');
+        }
+
+        // Allow Enter key to add item (only from name input)
         document.getElementById('newItemInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 addNewItem();
