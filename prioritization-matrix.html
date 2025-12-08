@@ -199,23 +199,24 @@
 
         .y-axis-label {
             position: absolute;
-            left: -50px;
+            left: -80px;
             top: 50%;
             transform: translateY(-50%) rotate(-90deg);
             font-weight: 700;
-            font-size: 16px;
+            font-size: 15px;
             color: #4a5568;
             white-space: nowrap;
         }
 
         .x-axis-label {
             position: absolute;
-            bottom: -50px;
+            bottom: -60px;
             left: 50%;
             transform: translateX(-50%);
             font-weight: 700;
-            font-size: 16px;
+            font-size: 15px;
             color: #4a5568;
+            white-space: nowrap;
         }
 
         .matrix {
@@ -474,7 +475,7 @@
         <header>
             <h1>Team Projects Prioritization Matrix</h1>
             <p>Organize and prioritize your People initiatives</p>
-            <a href="https://blueprints.guide/posts/top-talent-2x2s" target="_blank">Based on Top Talent 2x2s Framework</a>
+            <a href="https://blueprints.guide/posts/top-talent-2x2s" target="_blank">Based on Stellar Strategy 2x2s Framework</a>
         </header>
 
         <div class="controls">
@@ -493,7 +494,7 @@
                     <label for="quarterFilter">Filter by Quarter:</label>
                     <select id="quarterFilter" onchange="filterByQuarter()">
                         <option value="all">All Projects</option>
-                        <option value="backlog">Backlog</option>
+                        <option value="Backlog">Backlog</option>
                         <option value="Q1">Q1</option>
                         <option value="Q2">Q2</option>
                         <option value="Q3">Q3</option>
@@ -506,7 +507,7 @@
                     <div class="input-row">
                         <input type="text" id="newItemInput" placeholder="Project name...">
                         <select id="newItemQuarter">
-                            <option value="backlog">Backlog</option>
+                            <option value="Backlog">Backlog</option>
                             <option value="Q1">Q1</option>
                             <option value="Q2">Q2</option>
                             <option value="Q3">Q3</option>
@@ -556,7 +557,7 @@
             <div class="form-group">
                 <label for="editQuarter">Quarter</label>
                 <select id="editQuarter">
-                    <option value="backlog">Backlog</option>
+                    <option value="Backlog">Backlog</option>
                     <option value="Q1">Q1</option>
                     <option value="Q2">Q2</option>
                     <option value="Q3">Q3</option>
@@ -581,12 +582,13 @@
             { id: 2, name: "Virtual Coffee Chats", description: "Opt-in program that schedules conversations between employees across or within departments and regions, building connections and breaking down silos across the organization.", quarter: "Q2", quadrant: "q4", x: 50, y: 120 },
             { id: 3, name: "Talent Tap Team Loaner Program", description: "Internal marketplace matching employees with spare capacity (80/20 time) to short-term projects across teams, enabling skill development and cross-functional collaboration.", quarter: "Q1", quadrant: "q2", x: 150, y: 50 },
             { id: 4, name: "Training (Data Driven University)", description: "Structured learning platform providing data literacy and analytics training to build organizational capability in data-driven decision making.", quarter: "Q2", quadrant: "q1", x: 50, y: 50 },
-            { id: 5, name: "Voice Dictation Tool Rollout", description: "Company-wide adoption initiative for AI dictation tools, projected to increase productivity by X% through faster documentation and communication.", quarter: "backlog", quadrant: "q4", x: 50, y: 120 },
+            { id: 5, name: "Voice Dictation Tool Rollout", description: "Company-wide adoption initiative for AI dictation tools, projected to increase productivity by X% through faster documentation and communication.", quarter: "Backlog", quadrant: "q4", x: 50, y: 120 },
             { id: 6, name: "AI Coaching", description: "On-demand AI coaching assistant trained on company mission, values, and priorities, providing employees 24/7 access to guidance and idea validation.", quarter: "Q1", quadrant: "q2", x: 200, y: 100 },
             { id: 7, name: "Manager Training/Certification", description: "AI-powered learning modules delivering world-class management training, with focus on equipping first-time managers with essential leadership skills.", quarter: "Q2", quadrant: "q1", x: 100, y: 100 },
             { id: 8, name: "Professional Community Finder (Glue Club)", description: "Curated directory connecting employees to external professional communities in their specialty (e.g., Glue Club for operators, Generalist World, RevOps Pacific) while maintaining information privacy.", quarter: "Q3", quadrant: "q4", x: 150, y: 150 },
             { id: 9, name: "LinkedIn Employee Branding Training", description: "Workshop series optimizing employee LinkedIn profiles to strengthen talent brand advocacy and generate qualified leads for company products.", quarter: "Q3", quadrant: "q1", x: 120, y: 180 },
-            { id: 10, name: "New Hire Hub", description: "Centralized onboarding resource continuously updated with latest company news, product updates, and tool documentation to accelerate new hire ramp-up time and product familiarity.", quarter: "backlog", quadrant: "q1", x: 80, y: 220 }
+            { id: 10, name: "New Hire Hub", description: "Centralized onboarding resource continuously updated with latest company news, product updates, and tool documentation to accelerate new hire ramp-up time and product familiarity.", quarter: "Backlog", quadrant: "q1", x: 80, y: 220 },
+            { id: 11, name: "AI Agent Workflow Builder", description: "No-code platform enabling teams to create custom AI agents and automation workflows, reducing manual tasks and improving process efficiency across departments.", quarter: "Q1", quadrant: "q2", x: 130, y: 150 }
         ];
 
         // Load projects from localStorage or use defaults
@@ -604,7 +606,7 @@
                 try {
                     const loaded = JSON.parse(saved);
                     // Add quarter field to old projects if missing
-                    return loaded.map(p => ({ quarter: 'backlog', ...p }));
+                    return loaded.map(p => ({ quarter: 'Backlog', ...p }));
                 } catch (e) {
                     console.error('Error loading saved data:', e);
                     return [...defaultProjects];
@@ -855,7 +857,7 @@
 
                 nameInput.value = '';
                 descInput.value = '';
-                quarterInput.value = 'backlog';
+                quarterInput.value = 'Backlog';
             }
         }
 
@@ -875,7 +877,7 @@
 
             currentEditId = id;
             document.getElementById('editName').value = project.name;
-            document.getElementById('editQuarter').value = project.quarter || 'backlog';
+            document.getElementById('editQuarter').value = project.quarter || 'Backlog';
             document.getElementById('editDescription').value = project.description || '';
             document.getElementById('editModal').classList.add('active');
         }
