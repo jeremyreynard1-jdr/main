@@ -472,6 +472,113 @@
         .cancel-btn:hover {
             background: #cbd5e0;
         }
+
+        /* View toggle */
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .view-toggle button {
+            padding: 10px 24px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #4a5568;
+            transition: all 0.2s;
+        }
+
+        .view-toggle button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .view-toggle button:hover:not(.active) {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        /* List view */
+        .list-view {
+            display: none;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .list-view.active {
+            display: block;
+        }
+
+        .project-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .project-table th {
+            text-align: left;
+            padding: 16px;
+            background: #f7fafc;
+            font-weight: 700;
+            font-size: 13px;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .project-table td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        .project-table tr:hover {
+            background: #f7fafc;
+        }
+
+        .project-name {
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .project-description {
+            color: #718096;
+            font-size: 13px;
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
+        .quadrant-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-q1 { background: #ffeaa7; color: #856404; }
+        .badge-q2 { background: #d4fc79; color: #155724; }
+        .badge-q3 { background: #ff6b6b; color: #721c24; }
+        .badge-q4 { background: #a29bfe; color: #383d9d; }
+
+        .quarter-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #667eea;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -481,6 +588,11 @@
             <p>Organize and prioritize your People initiatives</p>
             <a href="https://blueprints.guide/posts/top-talent-2x2s" target="_blank">Based on Stellar Strategy 2x2s Framework</a>
         </header>
+
+        <div class="view-toggle">
+            <button class="active" onclick="switchView('grid')">Grid View</button>
+            <button onclick="switchView('list')">List View</button>
+        </div>
 
         <div class="controls">
             <div class="controls-row">
@@ -547,6 +659,23 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="list-view" id="listView">
+            <h2 style="margin-bottom: 24px; color: #1a202c; font-size: 24px;">All Projects</h2>
+            <table class="project-table">
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Quarter</th>
+                        <th>Quadrant</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="projectTableBody">
+                    <!-- Projects will be populated by JavaScript -->
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -921,6 +1050,76 @@
                 closeEdit();
             }
         });
+
+        // View switching
+        function switchView(view) {
+            const gridView = document.querySelector('.matrix-container');
+            const listView = document.getElementById('listView');
+            const controls = document.querySelector('.controls');
+            const buttons = document.querySelectorAll('.view-toggle button');
+
+            if (view === 'grid') {
+                gridView.style.display = 'block';
+                listView.classList.remove('active');
+                controls.style.display = 'block';
+                buttons[0].classList.add('active');
+                buttons[1].classList.remove('active');
+            } else {
+                gridView.style.display = 'none';
+                listView.classList.add('active');
+                controls.style.display = 'none';
+                buttons[0].classList.remove('active');
+                buttons[1].classList.add('active');
+                renderListView();
+            }
+        }
+
+        // Render list view
+        function renderListView() {
+            const tbody = document.getElementById('projectTableBody');
+            tbody.innerHTML = '';
+
+            // Get quadrant names based on current framework
+            const axisType = document.getElementById('axisType').value;
+            const config = axisConfigs[axisType];
+
+            // Sort projects by quarter then name
+            const sortedProjects = [...projects].sort((a, b) => {
+                const quarterOrder = { 'Q1': 1, 'Q2': 2, 'Q3': 3, 'Q4': 4, 'Backlog': 5 };
+                const aOrder = quarterOrder[a.quarter] || 99;
+                const bOrder = quarterOrder[b.quarter] || 99;
+                if (aOrder !== bOrder) return aOrder - bOrder;
+                return a.name.localeCompare(b.name);
+            });
+
+            sortedProjects.forEach(project => {
+                const tr = document.createElement('tr');
+
+                // Project name
+                const tdName = document.createElement('td');
+                tdName.innerHTML = `<div class="project-name">${project.name}</div>`;
+                tr.appendChild(tdName);
+
+                // Quarter
+                const tdQuarter = document.createElement('td');
+                tdQuarter.innerHTML = `<span class="quarter-badge">${project.quarter || 'Backlog'}</span>`;
+                tr.appendChild(tdQuarter);
+
+                // Quadrant
+                const tdQuadrant = document.createElement('td');
+                const quadrantName = config[project.quadrant] || 'Unknown';
+                const badgeClass = 'badge-' + project.quadrant;
+                tdQuadrant.innerHTML = `<span class="quadrant-badge ${badgeClass}">${quadrantName}</span>`;
+                tr.appendChild(tdQuadrant);
+
+                // Description
+                const tdDesc = document.createElement('td');
+                tdDesc.innerHTML = `<div class="project-description">${project.description || 'No description'}</div>`;
+                tr.appendChild(tdDesc);
+
+                tbody.appendChild(tr);
+            });
+        }
 
         // Initialize on load
         init();
