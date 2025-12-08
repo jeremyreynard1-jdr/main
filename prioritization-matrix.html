@@ -811,9 +811,23 @@
         // Load projects from localStorage
         function loadProjects() {
             const saved = localStorage.getItem('prioritizationMatrix');
+            const version = localStorage.getItem('matrixVersion');
+
+            // Clear old data if version doesn't match
+            if (version !== '2.0' || !saved) {
+                localStorage.setItem('matrixVersion', '2.0');
+                localStorage.setItem('prioritizationMatrix', JSON.stringify(defaultProjects));
+                return [...defaultProjects];
+            }
+
             if (saved) {
                 try {
                     const loaded = JSON.parse(saved);
+                    // Verify we have 10 projects
+                    if (loaded.length !== 10) {
+                        localStorage.setItem('prioritizationMatrix', JSON.stringify(defaultProjects));
+                        return [...defaultProjects];
+                    }
                     // Add quarter field to old projects if missing
                     return loaded.map(p => ({ quarter: 'Backlog', ...p }));
                 } catch (e) {
