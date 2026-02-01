@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Notes">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Unified Notes</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a1a2e'/><text x='50' y='62' text-anchor='middle' font-size='50' fill='white'>N</text></svg>">
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --text-secondary: #86868b;
+      --border: #e5e5ea;
+      --accent: #1a1a2e;
+      --slack: #4A154B;
+      --apple: #FF9500;
+      --granola: #E8622A;
+      --manual: #007AFF;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Header ────────────────────────────────────────── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(245, 245, 247, 0.85);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      padding: calc(var(--safe-top) + 8px) 16px 0;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .header-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 8px;
+      color: var(--accent);
+      position: relative;
+    }
+
+    .header-btn:active { background: rgba(0,0,0,0.05); }
+
+    .sync-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      position: absolute;
+      top: 4px;
+      right: 4px;
+    }
+    .sync-indicator.idle { background: #34c759; }
+    .sync-indicator.syncing { background: #ff9500; animation: pulse 1s infinite; }
+    .sync-indicator.error { background: #ff3b30; }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* ─── Search Bar ────────────────────────────────────── */
+    .search-container {
+      padding: 0 0 10px;
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: rgba(0,0,0,0.06);
+      border-radius: 10px;
+      padding: 8px 12px;
+      gap: 8px;
+    }
+
+    .search-bar svg { flex-shrink: 0; color: var(--text-secondary); }
+
+    .search-bar input {
+      flex: 1;
+      border: none;
+      background: none;
+      font-size: 16px;
+      color: var(--text);
+      outline: none;
+      font-family: inherit;
+    }
+
+    .search-bar input::placeholder { color: var(--text-secondary); }
+
+    .search-clear {
+      background: rgba(0,0,0,0.15);
+      border: none;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 10px;
+      color: white;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .search-clear.visible { display: flex; }
+
+    /* ─── Source Filters ────────────────────────────────── */
+    .filters {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .filters::-webkit-scrollbar { display: none; }
+
+    .filter-chip {
+      flex-shrink: 0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .filter-chip:active { transform: scale(0.95); }
+
+    .filter-chip.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .filter-chip .count {
+      display: inline-block;
+      background: rgba(0,0,0,0.1);
+      border-radius: 10px;
+      padding: 1px 6px;
+      font-size: 11px;
+      margin-left: 4px;
+    }
+
+    .filter-chip.active .count { background: rgba(255,255,255,0.25); }
+
+    /* ─── Notes List ────────────────────────────────────── */
+    .notes-container {
+      padding: 0 16px 120px;
+    }
+
+    .notes-section-header {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 16px 0 8px;
+    }
+
+    .note-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      cursor: pointer;
+      transition: transform 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .note-card:active { transform: scale(0.985); }
+
+    .note-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .note-title {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.3;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .note-star {
+      color: var(--text-secondary);
+      font-size: 14px;
+      flex-shrink: 0;
+      padding: 2px;
+    }
+    .note-star.starred { color: #ff9500; }
+
+    .note-preview {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .note-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      color: white;
+    }
+    .source-badge.slack { background: var(--slack); }
+    .source-badge.apple-notes { background: var(--apple); }
+    .source-badge.granola { background: var(--granola); }
+    .source-badge.manual { background: var(--manual); }
+
+    .note-date {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .note-folder {
+      font-size: 11px;
+      color: var(--text-secondary);
+      background: rgba(0,0,0,0.04);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .note-tags {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .note-tag {
+      font-size: 11px;
+      color: var(--accent);
+      background: rgba(26, 26, 46, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ─── Empty State ───────────────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 32px;
+    }
+
+    .empty-state .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.5; }
+
+    .empty-state h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ─── FAB ───────────────────────────────────────────── */
+    .fab {
+      position: fixed;
+      bottom: calc(24px + var(--safe-bottom));
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(26, 26, 46, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 90;
+      transition: transform 0.2s;
+    }
+
+    .fab:active { transform: scale(0.9); }
+
+    /* ─── Overlay (detail, settings, editor) ────────────── */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 200;
+      background: var(--bg);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .overlay.active { transform: translateX(0); }
+
+    .overlay-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(245, 245, 247, 0.85);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: calc(var(--safe-top) + 12px) 16px 12px;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .overlay-back {
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: var(--accent);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-family: inherit;
+      font-weight: 500;
+    }
+
+    .overlay-title {
+      font-size: 16px;
+      font-weight: 600;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    .overlay-action {
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: var(--accent);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 500;
+    }
+
+    .overlay-action.destructive { color: #ff3b30; }
+
+    /* ─── Note Detail ───────────────────────────────────── */
+    .detail-content {
+      padding: 20px 16px calc(40px + var(--safe-bottom));
+    }
+
+    .detail-title {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 12px;
+    }
+
+    .detail-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .detail-body {
+      font-size: 16px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .detail-section {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 0.5px solid var(--border);
+    }
+
+    .detail-section h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .detail-participants {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .participant-chip {
+      padding: 4px 10px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    /* ─── Editor ────────────────────────────────────────── */
+    .editor-form {
+      padding: 20px 16px calc(40px + var(--safe-bottom));
+    }
+
+    .editor-field {
+      margin-bottom: 20px;
+    }
+
+    .editor-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .editor-field input,
+    .editor-field textarea,
+    .editor-field select {
+      width: 100%;
+      padding: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--card);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .editor-field input:focus,
+    .editor-field textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .editor-field textarea {
+      min-height: 200px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .tag-input-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--card);
+      min-height: 44px;
+      align-items: center;
+    }
+
+    .tag-input-container:focus-within { border-color: var(--accent); }
+
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background: rgba(26, 26, 46, 0.08);
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
+    .tag-pill button {
+      background: none;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      color: var(--text-secondary);
+      padding: 0 2px;
+    }
+
+    .tag-input {
+      flex: 1;
+      min-width: 80px;
+      border: none !important;
+      padding: 4px 0 !important;
+      font-size: 14px !important;
+      outline: none;
+      background: none !important;
+    }
+
+    /* ─── Settings ──────────────────────────────────────── */
+    .settings-content {
+      padding: 20px 16px calc(40px + var(--safe-bottom));
+    }
+
+    .settings-section {
+      margin-bottom: 32px;
+    }
+
+    .settings-section h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .settings-card {
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .settings-row:last-child { border-bottom: none; }
+
+    .settings-row-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .settings-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .settings-label {
+      font-size: 16px;
+    }
+
+    .settings-sublabel {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dot.connected { background: #34c759; }
+    .status-dot.disconnected { background: #ff3b30; }
+    .status-dot.syncing { background: #ff9500; animation: pulse 1s infinite; }
+
+    .settings-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .settings-btn.primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .settings-btn.outline {
+      background: none;
+      border: 1.5px solid var(--border);
+      color: var(--text);
+    }
+
+    .shortcut-steps {
+      padding: 0;
+      list-style: none;
+      counter-reset: step;
+    }
+
+    .shortcut-steps li {
+      counter-increment: step;
+      padding: 10px 16px 10px 40px;
+      position: relative;
+      font-size: 14px;
+      line-height: 1.5;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .shortcut-steps li:last-child { border-bottom: none; }
+
+    .shortcut-steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .webhook-url {
+      display: block;
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: rgba(0,0,0,0.04);
+      border-radius: 8px;
+      font-family: 'SF Mono', monospace;
+      font-size: 12px;
+      word-break: break-all;
+      color: var(--accent);
+    }
+
+    /* ─── Toast ─────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: calc(100px + var(--safe-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--accent);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 300;
+      opacity: 0;
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ─── Loading ───────────────────────────────────────── */
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .note-card { animation: fadeIn 0.25s ease; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <h1>Notes</h1>
+      <div class="header-actions">
+        <button class="header-btn" id="syncBtn" title="Sync now">
+          <span class="sync-indicator idle" id="syncDot"></span>
+          &#x21BB;
+        </button>
+        <button class="header-btn" id="settingsBtn" title="Settings">&#x2699;</button>
+      </div>
+    </div>
+    <div class="search-container">
+      <div class="search-bar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search notes..." autocomplete="off" autocorrect="off" spellcheck="false">
+        <button class="search-clear" id="searchClear">&times;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Source Filters -->
+  <div class="filters" id="filters">
+    <button class="filter-chip active" data-source="">All <span class="count" id="countAll">0</span></button>
+    <button class="filter-chip" data-source="slack">Slack <span class="count" id="countSlack">0</span></button>
+    <button class="filter-chip" data-source="apple-notes">Apple Notes <span class="count" id="countApple">0</span></button>
+    <button class="filter-chip" data-source="granola">Granola <span class="count" id="countGranola">0</span></button>
+    <button class="filter-chip" data-source="manual">Manual <span class="count" id="countManual">0</span></button>
+    <button class="filter-chip" data-starred="true">Starred</button>
+  </div>
+
+  <!-- Notes List -->
+  <div class="notes-container" id="notesList"></div>
+
+  <!-- FAB -->
+  <button class="fab" id="fabBtn">+</button>
+
+  <!-- Note Detail Overlay -->
+  <div class="overlay" id="detailOverlay">
+    <div class="overlay-header">
+      <button class="overlay-back" id="detailBack">&#x2039; Back</button>
+      <span class="overlay-title">Note</span>
+      <button class="overlay-action" id="detailEdit">Edit</button>
+    </div>
+    <div class="detail-content" id="detailContent"></div>
+  </div>
+
+  <!-- Editor Overlay -->
+  <div class="overlay" id="editorOverlay">
+    <div class="overlay-header">
+      <button class="overlay-back" id="editorCancel">Cancel</button>
+      <span class="overlay-title" id="editorTitle">New Note</span>
+      <button class="overlay-action" id="editorSave">Save</button>
+    </div>
+    <div class="editor-form" id="editorForm">
+      <div class="editor-field">
+        <label>Title</label>
+        <input type="text" id="edTitle" placeholder="Note title...">
+      </div>
+      <div class="editor-field">
+        <label>Content</label>
+        <textarea id="edContent" placeholder="Write your note..."></textarea>
+      </div>
+      <div class="editor-field">
+        <label>Folder</label>
+        <select id="edFolder">
+          <option value="Inbox">Inbox</option>
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Meetings">Meetings</option>
+          <option value="Ideas">Ideas</option>
+          <option value="Archive">Archive</option>
+        </select>
+      </div>
+      <div class="editor-field">
+        <label>Tags</label>
+        <div class="tag-input-container" id="tagContainer">
+          <input type="text" class="tag-input" id="edTagInput" placeholder="Add a tag...">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Overlay -->
+  <div class="overlay" id="settingsOverlay">
+    <div class="overlay-header">
+      <button class="overlay-back" id="settingsBack">&#x2039; Back</button>
+      <span class="overlay-title">Settings</span>
+      <span></span>
+    </div>
+    <div class="settings-content" id="settingsContent"></div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ─── App State ──────────────────────────────────────────
+    const state = {
+      notes: [],
+      currentFilter: '',
+      starredFilter: false,
+      searchQuery: '',
+      currentNote: null,
+      editingNote: null,
+      editorTags: [],
+      syncStatus: {},
+    };
+
+    // ─── API ────────────────────────────────────────────────
+    const api = {
+      async get(url) {
+        const res = await fetch(url);
+        return res.json();
+      },
+      async post(url, body) {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        return res.json();
+      },
+      async put(url, body) {
+        const res = await fetch(url, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        return res.json();
+      },
+      async del(url) {
+        const res = await fetch(url, { method: 'DELETE' });
+        return res.json();
+      },
+    };
+
+    // ─── Data ───────────────────────────────────────────────
+    async function loadNotes() {
+      const data = await api.get(`/api/notes?search=${encodeURIComponent(state.searchQuery)}`);
+      state.notes = data.notes || [];
+      updateCounts();
+      renderNotes();
+    }
+
+    async function loadSyncStatus() {
+      state.syncStatus = await api.get('/api/sync/status');
+      updateSyncDot();
+    }
+
+    function updateCounts() {
+      const all = state.notes;
+      document.getElementById('countAll').textContent = all.length;
+      document.getElementById('countSlack').textContent = all.filter(n => n.source === 'slack').length;
+      document.getElementById('countApple').textContent = all.filter(n => n.source === 'apple-notes').length;
+      document.getElementById('countGranola').textContent = all.filter(n => n.source === 'granola').length;
+      document.getElementById('countManual').textContent = all.filter(n => n.source === 'manual').length;
+    }
+
+    function updateSyncDot() {
+      const dot = document.getElementById('syncDot');
+      const ss = state.syncStatus;
+      const statuses = [ss.slack, ss.granola, ss.appleNotes].filter(Boolean);
+      if (statuses.some(s => s.status === 'syncing')) {
+        dot.className = 'sync-indicator syncing';
+      } else if (statuses.some(s => s.status === 'error')) {
+        dot.className = 'sync-indicator error';
+      } else {
+        dot.className = 'sync-indicator idle';
+      }
+    }
+
+    // ─── Rendering ──────────────────────────────────────────
+    function getFilteredNotes() {
+      let notes = [...state.notes];
+      if (state.currentFilter) notes = notes.filter(n => n.source === state.currentFilter);
+      if (state.starredFilter) notes = notes.filter(n => n.starred);
+      return notes;
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      const now = new Date();
+      const diff = now - d;
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'Just now';
+      if (mins < 60) return `${mins}m ago`;
+      const hours = Math.floor(mins / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      if (days < 7) return `${days}d ago`;
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    function sourceLabel(source) {
+      const labels = {
+        'slack': 'Slack',
+        'apple-notes': 'Apple Notes',
+        'granola': 'Granola',
+        'manual': 'Manual',
+      };
+      return labels[source] || source;
+    }
+
+    function sourceSublabel(note) {
+      if (note.source === 'slack') {
+        const meta = note.sourceMeta || {};
+        if (meta.type === 'starred') return 'Saved item';
+        if (meta.type === 'self-dm') return 'Self DM';
+        if (meta.channelName) return `#${meta.channelName}`;
+      }
+      if (note.source === 'granola') return 'Meeting note';
+      return '';
+    }
+
+    function groupNotesByDate(notes) {
+      const groups = {};
+      const today = new Date(); today.setHours(0,0,0,0);
+      const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+      const weekAgo = new Date(today); weekAgo.setDate(weekAgo.getDate() - 7);
+
+      for (const note of notes) {
+        const d = new Date(note.updatedAt || note.createdAt);
+        let label;
+        if (d >= today) label = 'Today';
+        else if (d >= yesterday) label = 'Yesterday';
+        else if (d >= weekAgo) label = 'This Week';
+        else label = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+        if (!groups[label]) groups[label] = [];
+        groups[label].push(note);
+      }
+      return groups;
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notesList');
+      const notes = getFilteredNotes();
+
+      if (notes.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">${state.searchQuery ? '&#x1F50D;' : '&#x1F4DD;'}</div>
+            <h3>${state.searchQuery ? 'No results' : 'No notes yet'}</h3>
+            <p>${state.searchQuery
+              ? 'Try a different search term'
+              : 'Your notes from Slack, Apple Notes, and Granola will appear here once synced. Tap + to add a manual note.'
+            }</p>
+          </div>
+        `;
+        return;
+      }
+
+      const groups = groupNotesByDate(notes);
+      let html = '';
+
+      for (const [label, groupNotes] of Object.entries(groups)) {
+        html += `<div class="notes-section-header">${label}</div>`;
+        for (const note of groupNotes) {
+          const sub = sourceSublabel(note);
+          html += `
+            <div class="note-card" data-id="${note.id}">
+              <div class="note-card-header">
+                <div class="note-title">${escapeHtml(note.title)}</div>
+                <span class="note-star ${note.starred ? 'starred' : ''}" data-action="star" data-id="${note.id}">
+                  ${note.starred ? '&#x2605;' : '&#x2606;'}
+                </span>
+              </div>
+              <div class="note-preview">${escapeHtml(note.content.substring(0, 150))}</div>
+              <div class="note-meta">
+                <span class="source-badge ${note.source}">${sourceLabel(note.source)}${sub ? ' &middot; ' + escapeHtml(sub) : ''}</span>
+                <span class="note-date">${formatDate(note.updatedAt || note.createdAt)}</span>
+                ${note.folder && note.folder !== 'Inbox' ? `<span class="note-folder">${escapeHtml(note.folder)}</span>` : ''}
+                ${(note.tags || []).map(t => `<span class="note-tag">${escapeHtml(t)}</span>`).join('')}
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      container.innerHTML = html;
+    }
+
+    function escapeHtml(s) {
+      if (!s) return '';
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ─── Note Detail ────────────────────────────────────────
+    function showDetail(note) {
+      state.currentNote = note;
+      const el = document.getElementById('detailContent');
+      const meta = note.sourceMeta || {};
+
+      let participantsHtml = '';
+      if (meta.participants && meta.participants.length > 0) {
+        participantsHtml = `
+          <div class="detail-section">
+            <h4>Participants</h4>
+            <div class="detail-participants">
+              ${meta.participants.map(p => `<span class="participant-chip">${escapeHtml(typeof p === 'string' ? p : p.name || p.email || 'Unknown')}</span>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      const sub = sourceSublabel(note);
+
+      el.innerHTML = `
+        <h2 class="detail-title">${escapeHtml(note.title)}</h2>
+        <div class="detail-meta">
+          <span class="source-badge ${note.source}">${sourceLabel(note.source)}${sub ? ' &middot; ' + escapeHtml(sub) : ''}</span>
+          <span class="note-date">${formatDate(note.updatedAt || note.createdAt)}</span>
+          ${note.folder ? `<span class="note-folder">${escapeHtml(note.folder)}</span>` : ''}
+          ${(note.tags || []).map(t => `<span class="note-tag">${escapeHtml(t)}</span>`).join('')}
+        </div>
+        <div class="detail-body">${escapeHtml(note.content)}</div>
+        ${participantsHtml}
+        ${note.sourceUrl ? `
+          <div class="detail-section">
+            <h4>Source</h4>
+            <a href="${escapeHtml(note.sourceUrl)}" target="_blank" rel="noopener" style="color:var(--accent);font-size:14px;">Open in ${sourceLabel(note.source)}</a>
+          </div>
+        ` : ''}
+        <div class="detail-section" style="text-align:center;">
+          <button class="settings-btn outline" onclick="deleteNote('${note.id}')" style="color:#ff3b30;border-color:#ff3b30;">Delete Note</button>
+        </div>
+      `;
+
+      document.getElementById('detailOverlay').classList.add('active');
+    }
+
+    function hideDetail() {
+      document.getElementById('detailOverlay').classList.remove('active');
+      state.currentNote = null;
+    }
+
+    // ─── Editor ─────────────────────────────────────────────
+    function showEditor(note) {
+      state.editingNote = note || null;
+      state.editorTags = note ? [...(note.tags || [])] : [];
+
+      document.getElementById('editorTitle').textContent = note ? 'Edit Note' : 'New Note';
+      document.getElementById('edTitle').value = note ? note.title : '';
+      document.getElementById('edContent').value = note ? note.content : '';
+      document.getElementById('edFolder').value = note ? (note.folder || 'Inbox') : 'Inbox';
+      renderEditorTags();
+
+      document.getElementById('editorOverlay').classList.add('active');
+      setTimeout(() => document.getElementById('edTitle').focus(), 350);
+    }
+
+    function hideEditor() {
+      document.getElementById('editorOverlay').classList.remove('active');
+      state.editingNote = null;
+      state.editorTags = [];
+    }
+
+    function renderEditorTags() {
+      const container = document.getElementById('tagContainer');
+      const input = document.getElementById('edTagInput');
+      container.querySelectorAll('.tag-pill').forEach(el => el.remove());
+      for (const tag of state.editorTags) {
+        const pill = document.createElement('span');
+        pill.className = 'tag-pill';
+        pill.innerHTML = `${escapeHtml(tag)} <button data-remove-tag="${tag}">&times;</button>`;
+        container.insertBefore(pill, input);
+      }
+    }
+
+    async function saveNote() {
+      const title = document.getElementById('edTitle').value.trim();
+      const content = document.getElementById('edContent').value.trim();
+      const folder = document.getElementById('edFolder').value;
+
+      if (!title && !content) {
+        showToast('Enter a title or content');
+        return;
+      }
+
+      try {
+        if (state.editingNote) {
+          await api.put(`/api/notes/${state.editingNote.id}`, {
+            title: title || 'Untitled',
+            content,
+            folder,
+            tags: state.editorTags,
+          });
+          showToast('Note updated');
+        } else {
+          await api.post('/api/notes', {
+            title: title || 'Untitled',
+            content,
+            folder,
+            tags: state.editorTags,
+          });
+          showToast('Note created');
+        }
+
+        hideEditor();
+        hideDetail();
+        await loadNotes();
+      } catch (e) {
+        showToast('Error saving note');
+      }
+    }
+
+    async function deleteNote(id) {
+      if (!confirm('Delete this note?')) return;
+      try {
+        await api.del(`/api/notes/${id}`);
+        hideDetail();
+        showToast('Note deleted');
+        await loadNotes();
+      } catch (e) {
+        showToast('Error deleting note');
+      }
+    }
+
+    async function toggleStar(id, e) {
+      e.stopPropagation();
+      const note = state.notes.find(n => n.id === id);
+      if (!note) return;
+      await api.put(`/api/notes/${id}`, { starred: !note.starred });
+      await loadNotes();
+    }
+
+    // ─── Settings ───────────────────────────────────────────
+    async function showSettings() {
+      await loadSyncStatus();
+      const ss = state.syncStatus;
+      const el = document.getElementById('settingsContent');
+
+      function row(icon, bg, label, sublabel, status) {
+        return `
+          <div class="settings-row">
+            <div class="settings-row-left">
+              <div class="settings-icon" style="background:${bg}">${icon}</div>
+              <div>
+                <div class="settings-label">${label}</div>
+                ${sublabel ? `<div class="settings-sublabel">${sublabel}</div>` : ''}
+              </div>
+            </div>
+            <div class="status-dot ${status}"></div>
+          </div>
+        `;
+      }
+
+      const slackSub = ss.slack?.enabled
+        ? (ss.slack.lastSync ? `Last sync: ${formatDate(ss.slack.lastSync)}` : 'Waiting for first sync...')
+        : 'Not configured';
+      const granolaSub = ss.granola?.enabled
+        ? (ss.granola.lastSync ? `Last sync: ${formatDate(ss.granola.lastSync)}` : 'Waiting for first sync...')
+        : 'Not configured';
+      const appleSub = ss.appleNotes?.enabled
+        ? (ss.appleNotes.lastSync ? `Last sync: ${formatDate(ss.appleNotes.lastSync)}` : 'Waiting for webhook...')
+        : 'Not configured';
+
+      el.innerHTML = `
+        <div class="settings-section">
+          <h3>Integrations</h3>
+          <div class="settings-card">
+            ${row('&#x1F4AC;', 'var(--slack)', 'Slack', slackSub, ss.slack?.enabled ? (ss.slack.status === 'error' ? 'disconnected' : 'connected') : 'disconnected')}
+            ${row('&#x1F4DD;', 'var(--apple)', 'Apple Notes', appleSub, ss.appleNotes?.enabled ? 'connected' : 'disconnected')}
+            ${row('&#x1F91D;', 'var(--granola)', 'Granola', granolaSub, ss.granola?.enabled ? (ss.granola.status === 'error' ? 'disconnected' : 'connected') : 'disconnected')}
+          </div>
+        </div>
+
+        ${ss.slack?.error ? `
+        <div class="settings-section">
+          <h3>Errors</h3>
+          <div class="settings-card">
+            <div class="settings-row" style="color:#ff3b30;font-size:13px;">
+              Slack: ${escapeHtml(ss.slack.error)}
+            </div>
+          </div>
+        </div>
+        ` : ''}
+
+        ${ss.granola?.error ? `
+        <div class="settings-section">
+          <div class="settings-card">
+            <div class="settings-row" style="color:#ff3b30;font-size:13px;">
+              Granola: ${escapeHtml(ss.granola.error)}
+            </div>
+          </div>
+        </div>
+        ` : ''}
+
+        <div class="settings-section">
+          <h3>Apple Notes Setup</h3>
+          <div class="settings-card">
+            <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:8px;">
+              <div class="settings-label">Webhook URL</div>
+              <code class="webhook-url" id="webhookUrl">Loading...</code>
+              <button class="settings-btn outline" id="copyWebhook" style="margin-top:4px;">Copy URL</button>
+            </div>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="settings-card">
+              <div style="padding:12px 16px;font-size:14px;font-weight:600;">Shortcuts Setup</div>
+              <ol class="shortcut-steps" id="shortcutSteps">
+                <li>Open the <b>Shortcuts</b> app on your iPhone</li>
+                <li>Create a new shortcut</li>
+                <li>Add action: <b>Find All Notes</b></li>
+                <li>Add <b>Repeat with Each</b> over the found notes</li>
+                <li>Inside loop: <b>Get Contents of URL</b> (POST, JSON body with title, content, folder)</li>
+                <li>To automate: <b>Automation</b> &rarr; Time of Day &rarr; run every hour</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Actions</h3>
+          <div class="settings-card">
+            <div class="settings-row">
+              <div class="settings-label">Sync all sources now</div>
+              <button class="settings-btn primary" id="syncAllBtn">Sync Now</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Load webhook URL
+      try {
+        const setup = await api.get('/api/setup/apple-shortcut');
+        document.getElementById('webhookUrl').textContent = setup.webhookUrl;
+        document.getElementById('copyWebhook').onclick = () => {
+          navigator.clipboard.writeText(setup.webhookUrl).then(() => showToast('URL copied'));
+        };
+      } catch (e) { /* skip */ }
+
+      document.getElementById('syncAllBtn').onclick = async () => {
+        showToast('Syncing...');
+        await api.post('/api/sync', { source: 'all' });
+        await loadNotes();
+        await loadSyncStatus();
+        showSettings(); // refresh
+        showToast('Sync complete');
+      };
+
+      document.getElementById('settingsOverlay').classList.add('active');
+    }
+
+    function hideSettings() {
+      document.getElementById('settingsOverlay').classList.remove('active');
+    }
+
+    // ─── Toast ──────────────────────────────────────────────
+    let toastTimeout;
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('visible');
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => el.classList.remove('visible'), 2500);
+    }
+
+    // ─── Event Listeners ────────────────────────────────────
+    // Filter chips
+    document.getElementById('filters').addEventListener('click', (e) => {
+      const chip = e.target.closest('.filter-chip');
+      if (!chip) return;
+
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+
+      if (chip.dataset.starred) {
+        state.starredFilter = true;
+        state.currentFilter = '';
+      } else {
+        state.starredFilter = false;
+        state.currentFilter = chip.dataset.source;
+      }
+      renderNotes();
+    });
+
+    // Search
+    const searchInput = document.getElementById('searchInput');
+    const searchClear = document.getElementById('searchClear');
+    let searchDebounce;
+    searchInput.addEventListener('input', () => {
+      state.searchQuery = searchInput.value;
+      searchClear.classList.toggle('visible', !!state.searchQuery);
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => loadNotes(), 250);
+    });
+    searchClear.addEventListener('click', () => {
+      searchInput.value = '';
+      state.searchQuery = '';
+      searchClear.classList.remove('visible');
+      loadNotes();
+    });
+
+    // Notes list clicks
+    document.getElementById('notesList').addEventListener('click', (e) => {
+      const star = e.target.closest('[data-action="star"]');
+      if (star) {
+        toggleStar(star.dataset.id, e);
+        return;
+      }
+
+      const card = e.target.closest('.note-card');
+      if (card) {
+        const note = state.notes.find(n => n.id === card.dataset.id);
+        if (note) showDetail(note);
+      }
+    });
+
+    // FAB
+    document.getElementById('fabBtn').addEventListener('click', () => showEditor(null));
+
+    // Detail overlay
+    document.getElementById('detailBack').addEventListener('click', hideDetail);
+    document.getElementById('detailEdit').addEventListener('click', () => {
+      if (state.currentNote) showEditor(state.currentNote);
+    });
+
+    // Editor overlay
+    document.getElementById('editorCancel').addEventListener('click', hideEditor);
+    document.getElementById('editorSave').addEventListener('click', saveNote);
+
+    // Tag input
+    document.getElementById('edTagInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        const val = e.target.value.trim().replace(/,/g, '');
+        if (val && !state.editorTags.includes(val)) {
+          state.editorTags.push(val);
+          renderEditorTags();
+        }
+        e.target.value = '';
+      }
+    });
+
+    document.getElementById('tagContainer').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-remove-tag]');
+      if (btn) {
+        state.editorTags = state.editorTags.filter(t => t !== btn.dataset.removeTag);
+        renderEditorTags();
+      }
+    });
+
+    // Settings
+    document.getElementById('settingsBtn').addEventListener('click', showSettings);
+    document.getElementById('settingsBack').addEventListener('click', hideSettings);
+
+    // Sync button
+    document.getElementById('syncBtn').addEventListener('click', async () => {
+      showToast('Syncing...');
+      document.getElementById('syncDot').className = 'sync-indicator syncing';
+      await api.post('/api/sync', { source: 'all' });
+      await Promise.all([loadNotes(), loadSyncStatus()]);
+      showToast('Sync complete');
+    });
+
+    // ─── Init ───────────────────────────────────────────────
+    async function init() {
+      await Promise.all([loadNotes(), loadSyncStatus()]);
+      // Poll sync status periodically
+      setInterval(loadSyncStatus, 30000);
+    }
+
+    init();
+
+    // PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
