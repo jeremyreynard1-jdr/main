@@ -1,0 +1,63 @@
+{
+    "comparison_id": "sample-comparison-001",
+    "products": [
+        {
+            "product_name": "Sony WH-1000XM5",
+            "price": 348.00,
+            "rating": 4.4,
+            "verdict": "buy",
+            "confidence": 0.85,
+            "summary": "Industry-leading noise cancellation with excellent sound quality. Comfortable for extended wear with 30-hour battery life. The XM5 is a refinement of the beloved XM4 line.",
+            "pros": [
+                "Best-in-class noise cancellation",
+                "30-hour battery life",
+                "Lightweight and comfortable",
+                "Multipoint Bluetooth connection",
+                "Speak-to-chat feature works well"
+            ],
+            "cons": [
+                "No longer folds flat (reduced portability)",
+                "Slightly less bass than XM4",
+                "Touch controls can be finicky",
+                "Price premium over competitors"
+            ],
+            "fake_review_estimate": 8,
+            "hype_score": 0.3
+        },
+        {
+            "product_name": "Bose QuietComfort Ultra Headphones",
+            "price": 379.00,
+            "rating": 4.3,
+            "verdict": "buy",
+            "confidence": 0.80,
+            "summary": "Bose's flagship with immersive audio and excellent comfort. Strong noise cancellation with a more neutral sound profile than Sony. CustomTune technology adapts to your ears.",
+            "pros": [
+                "Extremely comfortable fit",
+                "Excellent noise cancellation",
+                "Immersive spatial audio",
+                "CustomTune ear personalization",
+                "Durable build quality"
+            ],
+            "cons": [
+                "Only 24-hour battery life",
+                "Higher price point",
+                "App can be buggy",
+                "No multipoint without firmware update"
+            ],
+            "fake_review_estimate": 5,
+            "hype_score": 0.25
+        }
+    ],
+    "head_to_head": {
+        "noise_cancellation": "Sony WH-1000XM5 - Slightly edge, especially for low-frequency noise",
+        "sound_quality": "Tie - Sony has more bass, Bose more neutral and spatial",
+        "comfort": "Bose QC Ultra - Wider range of head sizes, lighter clamping",
+        "battery_life": "Sony WH-1000XM5 - 30hrs vs 24hrs",
+        "build_quality": "Bose QC Ultra - More premium materials",
+        "value_for_money": "Sony WH-1000XM5 - $30 cheaper with longer battery",
+        "portability": "Bose QC Ultra - Folds flat, better case",
+        "features": "Sony WH-1000XM5 - Multipoint, speak-to-chat, better app"
+    },
+    "recommendation": "Sony WH-1000XM5",
+    "reasoning": "Based on your preference for durability and performance with moderate price sensitivity, the Sony WH-1000XM5 offers the best overall package. Its 30-hour battery life, superior noise cancellation, and lower price point align well with your priorities. However, if comfort during extended wear is your top concern, the Bose QC Ultra is worth the premium."
+}

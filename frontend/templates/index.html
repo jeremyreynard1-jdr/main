@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Research Assistant</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- Header -->
+        <header>
+            <h1>Product <span>Research</span> Assistant</h1>
+            <p>AI-powered product analysis across Amazon, Reddit, and more</p>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <div class="search-row">
+                <input type="text" id="search-input" class="search-input"
+                       placeholder="Search for a product (e.g. 'Sony WH-1000XM5 headphones')">
+                <select id="category-select" class="category-select">
+                    <option value="">Auto-detect</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="furniture">Furniture</option>
+                    <option value="kitchen">Kitchen</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="beauty">Beauty</option>
+                    <option value="sports">Sports</option>
+                    <option value="toys">Toys</option>
+                    <option value="services">Services</option>
+                    <option value="other">Other</option>
+                </select>
+                <button id="search-btn" class="btn btn-primary">Research</button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" data-tab="tab-research">Research</button>
+            <button class="tab" data-tab="tab-compare">Compare</button>
+            <button class="tab" data-tab="tab-preferences">Preferences</button>
+            <button class="tab" data-tab="tab-saved">Saved</button>
+            <button class="tab" data-tab="tab-history">History</button>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Research Tab -->
+        <!-- ============================================================ -->
+        <div id="tab-research" class="tab-content active">
+
+            <!-- Empty state -->
+            <div id="empty-state" class="empty-state">
+                <h3>Ready to research</h3>
+                <p>Enter a product name above to get an AI-powered analysis based on Amazon reviews, Reddit discussions, and more.</p>
+            </div>
+
+            <!-- Progress -->
+            <div id="progress-section" style="display:none">
+                <div class="progress-container">
+                    <div class="progress-bar-outer">
+                        <div class="progress-bar-inner"></div>
+                    </div>
+                    <div id="progress-stage" class="progress-stage"></div>
+                    <div id="progress-detail" class="progress-detail"></div>
+                </div>
+            </div>
+
+            <!-- Results -->
+            <div id="results-section" style="display:none">
+
+                <!-- Product header -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2 id="result-product-name" class="card-title"></h2>
+                            <div class="card-subtitle">
+                                <span id="result-category" class="tag tag-blue"></span>
+                                <span style="margin-left:8px" id="result-price"></span>
+                                <span style="margin-left:8px;color:var(--yellow)" id="result-rating"></span>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px">
+                            <span id="result-verdict" class="verdict-badge"></span>
+                            <button class="btn btn-secondary btn-sm" onclick="saveCurrentProduct()">Save</button>
+                        </div>
+                    </div>
+
+                    <div id="confidence-section"></div>
+
+                    <p id="result-summary" style="color:var(--text-secondary);font-size:14px;margin-top:12px"></p>
+                    <p id="result-verdict-reasoning" style="font-size:14px;margin-top:12px;padding:12px 16px;background:var(--bg-secondary);border-radius:var(--radius-sm)"></p>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div id="stat-amazon" class="stat-value">0</div>
+                        <div class="stat-label">Amazon Reviews</div>
+                    </div>
+                    <div class="stat-item">
+                        <div id="stat-reddit" class="stat-value">0</div>
+                        <div class="stat-label">Reddit Posts</div>
+                    </div>
+                    <div class="stat-item">
+                        <div id="stat-hype" class="stat-value">N/A</div>
+                        <div class="stat-label">Hype Score</div>
+                    </div>
+                </div>
+
+                <!-- Pros / Cons -->
+                <div class="card">
+                    <div class="pros-cons">
+                        <div class="pros-list">
+                            <h4>Pros</h4>
+                            <ul id="result-pros"></ul>
+                        </div>
+                        <div class="cons-list">
+                            <h4>Cons</h4>
+                            <ul id="result-cons"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fake review analysis -->
+                <div id="fake-review-section"></div>
+
+                <!-- Gotchas -->
+                <div id="gotchas-section"></div>
+
+                <!-- Risk assessment -->
+                <div id="risk-section"></div>
+
+                <!-- Alternatives -->
+                <div id="alternatives-section"></div>
+
+                <!-- Reddit discussions -->
+                <div id="reddit-section"></div>
+
+                <!-- Customer photos -->
+                <div id="photos-section"></div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Compare Tab -->
+        <!-- ============================================================ -->
+        <div id="tab-compare" class="tab-content">
+            <div class="card">
+                <h3 class="card-title" style="margin-bottom:16px">Compare Products</h3>
+                <p style="color:var(--text-secondary);font-size:14px;margin-bottom:20px">
+                    Enter 2-3 products to compare side-by-side. The AI will analyze each and provide a head-to-head recommendation.
+                </p>
+                <div class="compare-inputs">
+                    <input type="text" id="compare-input-1" placeholder="Product 1 (e.g. 'Sony WH-1000XM5')">
+                    <input type="text" id="compare-input-2" placeholder="Product 2 (e.g. 'Bose QC Ultra')">
+                    <input type="text" id="compare-input-3" placeholder="Product 3 (optional)">
+                </div>
+                <button id="compare-btn" class="btn btn-primary">Compare</button>
+            </div>
+            <div id="comparison-result"></div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Preferences Tab -->
+        <!-- ============================================================ -->
+        <div id="tab-preferences" class="tab-content">
+
+            <!-- Global priorities -->
+            <div class="card pref-section">
+                <h3>Your Priorities</h3>
+                <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px">
+                    Select what matters most to you. These will be used to personalize product recommendations.
+                </p>
+                <div id="priority-buttons" class="priority-buttons"></div>
+            </div>
+
+            <!-- Dealbreakers -->
+            <div class="card pref-section">
+                <h3>Dealbreakers</h3>
+                <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px">
+                    Issues that would automatically make you skip a product.
+                </p>
+                <div id="dealbreaker-buttons" class="priority-buttons"></div>
+            </div>
+
+            <!-- Sensitivity profile -->
+            <div class="card pref-section">
+                <h3>Learned Sensitivity Profile</h3>
+                <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px">
+                    Based on your purchase satisfaction feedback, here's how sensitive you are to different factors.
+                </p>
+                <div id="sensitivity-profile"></div>
+            </div>
+
+            <!-- Satisfaction survey -->
+            <div class="card pref-section">
+                <h3>Purchase Satisfaction Survey</h3>
+                <p style="color:var(--text-secondary);font-size:14px;margin-bottom:16px">
+                    Help improve recommendations by rating past purchases.
+                </p>
+
+                <div style="margin-bottom:16px">
+                    <label style="font-size:13px;color:var(--text-secondary);display:block;margin-bottom:6px">Product name</label>
+                    <input type="text" id="survey-product" class="search-input" style="max-width:400px" placeholder="What did you buy?">
+                </div>
+
+                <div style="margin-bottom:16px">
+                    <label style="font-size:13px;color:var(--text-secondary);display:block;margin-bottom:6px">Category</label>
+                    <select id="survey-category" class="category-select">
+                        <option value="electronics">Electronics</option>
+                        <option value="furniture">Furniture</option>
+                        <option value="kitchen">Kitchen</option>
+                        <option value="clothing">Clothing</option>
+                        <option value="beauty">Beauty</option>
+                        <option value="sports">Sports</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom:16px">
+                    <label style="font-size:13px;color:var(--text-secondary);display:block;margin-bottom:6px">How satisfied are you? (1-5)</label>
+                    <div class="star-rating">
+                        <span class="star" onclick="setRating(1)">&#9733;</span>
+                        <span class="star" onclick="setRating(2)">&#9733;</span>
+                        <span class="star" onclick="setRating(3)">&#9733;</span>
+                        <span class="star" onclick="setRating(4)">&#9733;</span>
+                        <span class="star" onclick="setRating(5)">&#9733;</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:16px">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer">
+                        <input type="checkbox" id="survey-kept" checked>
+                        I still have / use this product
+                    </label>
+                </div>
+
+                <div style="margin-bottom:16px">
+                    <label style="font-size:13px;color:var(--text-secondary);display:block;margin-bottom:6px">What mattered most?</label>
+                    <div id="survey-matters" class="priority-buttons">
+                        <button class="priority-btn" onclick="this.classList.toggle('selected')">Durability</button>
+                        <button class="priority-btn" onclick="this.classList.toggle('selected')">Price</button>
+                        <button class="priority-btn" onclick="this.classList.toggle('selected')">Build quality</button>
+                        <button class="priority-btn" onclick="this.classList.toggle('selected')">Comfort</button>
+                        <button class="priority-btn" onclick="this.classList.toggle('selected')">Performance</button>
+                        <button class="priority-btn" onclick="this.classList.toggle('selected')">Design</button>
+                        <button class="priority-btn" onclick="this.classList.toggle('selected')">Ease of use</button>
+                        <button class="priority-btn" onclick="this.classList.toggle('selected')">Customer support</button>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:16px">
+                    <label style="font-size:13px;color:var(--text-secondary);display:block;margin-bottom:6px">Notes (optional)</label>
+                    <textarea id="survey-notes" class="search-input" style="min-height:80px;resize:vertical" placeholder="Any additional thoughts..."></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="submitSurvey()">Submit Feedback</button>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Saved Tab -->
+        <!-- ============================================================ -->
+        <div id="tab-saved" class="tab-content">
+            <div class="card">
+                <h3 class="card-title" style="margin-bottom:16px">Considering List</h3>
+                <div id="saved-list"></div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- History Tab -->
+        <!-- ============================================================ -->
+        <div id="tab-history" class="tab-content">
+            <div class="card">
+                <h3 class="card-title" style="margin-bottom:16px">Search History</h3>
+                <div id="history-list"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

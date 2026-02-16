@@ -1,0 +1,61 @@
+{
+    "user_id": "default",
+    "category_preferences": {
+        "electronics": {
+            "priorities": ["Build quality", "Battery life", "Performance"],
+            "dealbreakers": ["Poor durability", "Non-repairable"],
+            "price_sensitivity": 0.6,
+            "brand_preferences": ["Sony", "Apple", "Samsung"],
+            "brand_avoidances": [],
+            "notes": ""
+        },
+        "kitchen": {
+            "priorities": ["Durability", "Ease of use", "Size"],
+            "dealbreakers": ["Hard to set up", "Loud"],
+            "price_sensitivity": 0.4,
+            "brand_preferences": [],
+            "brand_avoidances": [],
+            "notes": "Prefer stainless steel over plastic"
+        }
+    },
+    "purchase_history": [
+        {
+            "product_name": "Sony WH-1000XM4",
+            "category": "electronics",
+            "purchase_date": "2024-06-15",
+            "satisfaction_score": 5,
+            "kept_product": true,
+            "notes": "Excellent noise cancellation, comfortable for long use",
+            "what_mattered_most": ["Comfort", "Performance", "Battery life"]
+        },
+        {
+            "product_name": "Cheap Bluetooth Speaker",
+            "category": "electronics",
+            "purchase_date": "2024-03-10",
+            "satisfaction_score": 2,
+            "kept_product": false,
+            "notes": "Broke after 2 months, tinny sound quality",
+            "what_mattered_most": ["Durability", "Build quality"]
+        },
+        {
+            "product_name": "Lodge Cast Iron Skillet",
+            "category": "kitchen",
+            "purchase_date": "2024-01-20",
+            "satisfaction_score": 5,
+            "kept_product": true,
+            "notes": "Will last forever, great heat distribution",
+            "what_mattered_most": ["Durability", "Performance"]
+        }
+    ],
+    "global_priorities": ["Durability", "Build quality", "Performance"],
+    "global_dealbreakers": ["Poor durability", "Non-repairable"],
+    "sensitivity_profile": {
+        "Durability": 0.85,
+        "Build quality": 0.8,
+        "Comfort": 0.7,
+        "Performance": 0.65,
+        "Battery life": 0.6,
+        "Price": 0.45
+    },
+    "updated_at": "2025-01-15T12:00:00"
+}
