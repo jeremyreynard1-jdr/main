@@ -32,7 +32,7 @@ export function SignalCard({ s }: { s: Signal }) {
   return (
     <article className="rounded-card border border-border bg-surface p-5">
       <header className="flex flex-wrap items-center gap-2">
-        <span className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-gold">
+        <span className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink">
           {s.category}
         </span>
         <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[9.5px] uppercase tracking-[0.14em] text-ink-muted">

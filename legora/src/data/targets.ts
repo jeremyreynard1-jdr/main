@@ -1,5 +1,6 @@
-// Named pipeline targets. All illustrative — the firms are real but the
-// pipeline state, warm-intro paths, and owners are mock.
+// Named pipeline targets. The firms are real but every pipeline state,
+// warm-intro path, and owner here is illustrative — every record carries
+// `illustrative: true` so the chip renders inline alongside the firm name.
 
 export type Target = {
   id: string;
@@ -11,6 +12,7 @@ export type Target = {
   tier: "Vault" | "AmLaw-100" | "Magic-Circle" | "Silver-Circle" | "Regional" | "Global" | "Big4";
   stage: "Explore" | "Pilot" | "Planned";
   whyThem: string;
+  illustrative: true;
 };
 
 export const targets: Target[] = [
@@ -24,6 +26,7 @@ export const targets: Target[] = [
     tier: "Vault",
     stage: "Explore",
     whyThem: "Private equity deal volume; drafting workflow fits.",
+    illustrative: true,
   },
   {
     id: "t-skadden",
@@ -35,6 +38,7 @@ export const targets: Target[] = [
     tier: "Vault",
     stage: "Explore",
     whyThem: "M&A workflow + global offices alignment.",
+    illustrative: true,
   },
   {
     id: "t-freshfields",
@@ -46,6 +50,7 @@ export const targets: Target[] = [
     tier: "Magic-Circle",
     stage: "Pilot",
     whyThem: "Magic Circle completion after Linklaters.",
+    illustrative: true,
   },
   {
     id: "t-clifford",
@@ -57,6 +62,7 @@ export const targets: Target[] = [
     tier: "Magic-Circle",
     stage: "Explore",
     whyThem: "Magic Circle + EU footprint.",
+    illustrative: true,
   },
   {
     id: "t-hengeler",
@@ -68,6 +74,7 @@ export const targets: Target[] = [
     tier: "Regional",
     stage: "Planned",
     whyThem: "DACH anchor — top-tier German firm.",
+    illustrative: true,
   },
   {
     id: "t-gleiss",
@@ -79,6 +86,7 @@ export const targets: Target[] = [
     tier: "Regional",
     stage: "Planned",
     whyThem: "DACH coverage; Stuttgart base for industrial clients.",
+    illustrative: true,
   },
   {
     id: "t-uria",
@@ -90,6 +98,7 @@ export const targets: Target[] = [
     tier: "Regional",
     stage: "Explore",
     whyThem: "Iberian coverage alongside Pérez-Llorca beachhead.",
+    illustrative: true,
   },
   {
     id: "t-nishimura",
@@ -101,6 +110,7 @@ export const targets: Target[] = [
     tier: "Regional",
     stage: "Explore",
     whyThem: "APAC deepening beyond Sydney.",
+    illustrative: true,
   },
   {
     id: "t-kimchang",
@@ -112,6 +122,7 @@ export const targets: Target[] = [
     tier: "Regional",
     stage: "Explore",
     whyThem: "Korea gateway; historically Harvey-skeptical.",
+    illustrative: true,
   },
   {
     id: "t-ey",
@@ -123,6 +134,7 @@ export const targets: Target[] = [
     tier: "Big4",
     stage: "Explore",
     whyThem: "Big 4 channel after Deloitte beachhead.",
+    illustrative: true,
   },
   {
     id: "t-baker",
@@ -134,6 +146,7 @@ export const targets: Target[] = [
     tier: "AmLaw-100",
     stage: "Planned",
     whyThem: "Houston open — energy/PE coverage.",
+    illustrative: true,
   },
   {
     id: "t-vinson",
@@ -145,5 +158,6 @@ export const targets: Target[] = [
     tier: "AmLaw-100",
     stage: "Planned",
     whyThem: "Houston open — energy practice.",
+    illustrative: true,
   },
 ];

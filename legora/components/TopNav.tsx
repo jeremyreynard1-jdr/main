@@ -23,7 +23,12 @@ export function TopNav() {
           href="/"
           className="flex shrink-0 items-center gap-2 py-4 text-[15px] leading-none text-ink tracking-tight"
         >
-          <Activity size={16} strokeWidth={2.25} className="text-gold" />
+          <Activity
+            size={16}
+            strokeWidth={2.25}
+            className="text-gold"
+            aria-hidden="true"
+          />
           <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted">
             The
           </span>

@@ -37,15 +37,19 @@ export function PlaybookOutput({ p }: { p: PlaybookTemplate }) {
         <div className="flex items-center gap-2">
           <button
             disabled
+            aria-label="Export to Notion (wires up day 1)"
+            title="Wires up day 1"
             className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full border border-border bg-bg-alt px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-muted opacity-60"
           >
-            <FileText size={12} /> Export to Notion
+            <FileText size={12} aria-hidden="true" /> Export to Notion
           </button>
           <button
             disabled
+            aria-label="Export to PDF (wires up day 1)"
+            title="Wires up day 1"
             className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-full border border-border bg-bg-alt px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-muted opacity-60"
           >
-            <Download size={12} /> PDF
+            <Download size={12} aria-hidden="true" /> PDF
           </button>
         </div>
       </header>
@@ -56,8 +60,8 @@ export function PlaybookOutput({ p }: { p: PlaybookTemplate }) {
 
       <Section title="Pre-launch checklist">
         <ul className="space-y-2">
-          {p.checklist.map((c, i) => (
-            <li key={i} className="flex items-start gap-2 text-[13px] text-ink">
+          {p.checklist.map((c) => (
+            <li key={c} className="flex items-start gap-2 text-[13px] text-ink">
               <span className="mt-1 size-1.5 shrink-0 rounded-full bg-gold" />
               <span>{c}</span>
             </li>
@@ -84,8 +88,8 @@ export function PlaybookOutput({ p }: { p: PlaybookTemplate }) {
               </tr>
             </thead>
             <tbody>
-              {p.raci.map((row, i) => (
-                <tr key={i} className="border-b border-border/60">
+              {p.raci.map((row) => (
+                <tr key={row.activity} className="border-b border-border/60">
                   <td className="py-2 pr-4 text-ink">{row.activity}</td>
                   <td className="py-2 pr-3 text-ink-muted">{row.R}</td>
                   <td className="py-2 pr-3 text-ink-muted">{row.A}</td>
@@ -100,9 +104,9 @@ export function PlaybookOutput({ p }: { p: PlaybookTemplate }) {
 
       <Section title="Operating cadence">
         <div className="flex flex-wrap gap-2">
-          {p.cadence.map((c, i) => (
+          {p.cadence.map((c) => (
             <span
-              key={i}
+              key={c}
               className="rounded-full border border-border bg-bg-alt px-3 py-1 text-[12px] text-ink"
             >
               {c}
@@ -118,8 +122,8 @@ export function PlaybookOutput({ p }: { p: PlaybookTemplate }) {
               Input metrics
             </div>
             <ul className="mt-2 space-y-1.5">
-              {p.metrics.input.map((m, i) => (
-                <li key={i} className="text-[13px] text-ink">
+              {p.metrics.input.map((m) => (
+                <li key={m} className="text-[13px] text-ink">
                   · {m}
                 </li>
               ))}
@@ -130,8 +134,8 @@ export function PlaybookOutput({ p }: { p: PlaybookTemplate }) {
               Output metrics
             </div>
             <ul className="mt-2 space-y-1.5">
-              {p.metrics.output.map((m, i) => (
-                <li key={i} className="text-[13px] text-ink">
+              {p.metrics.output.map((m) => (
+                <li key={m} className="text-[13px] text-ink">
                   · {m}
                 </li>
               ))}
@@ -142,9 +146,9 @@ export function PlaybookOutput({ p }: { p: PlaybookTemplate }) {
 
       <Section title="Risks & mitigations">
         <div className="space-y-3">
-          {p.risks.map((r, i) => (
+          {p.risks.map((r) => (
             <div
-              key={i}
+              key={r.risk}
               className="rounded-lg border border-border bg-bg-alt p-4"
             >
               <div className="text-[13px] font-medium text-rag-red">
@@ -168,8 +172,8 @@ export function PlaybookOutput({ p }: { p: PlaybookTemplate }) {
               Internal
             </div>
             <ul className="mt-2 space-y-1.5">
-              {p.comms.internal.map((m, i) => (
-                <li key={i} className="text-[13px] text-ink">
+              {p.comms.internal.map((m) => (
+                <li key={m} className="text-[13px] text-ink">
                   · {m}
                 </li>
               ))}
@@ -180,8 +184,8 @@ export function PlaybookOutput({ p }: { p: PlaybookTemplate }) {
               External
             </div>
             <ul className="mt-2 space-y-1.5">
-              {p.comms.external.map((m, i) => (
-                <li key={i} className="text-[13px] text-ink">
+              {p.comms.external.map((m) => (
+                <li key={m} className="text-[13px] text-ink">
                   · {m}
                 </li>
               ))}
@@ -207,8 +211,8 @@ export function PlaybookOutput({ p }: { p: PlaybookTemplate }) {
                 {col.label}
               </div>
               <ul className="mt-2 space-y-1.5">
-                {col.items.map((m, i) => (
-                  <li key={i} className="text-[13px] text-ink">
+                {col.items.map((m) => (
+                  <li key={m} className="text-[13px] text-ink">
                     · {m}
                   </li>
                 ))}

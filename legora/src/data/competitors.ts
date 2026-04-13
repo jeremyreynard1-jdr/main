@@ -104,14 +104,14 @@ export const competitors: Competitor[] = [
     threat: "Adjacent",
     facts: [
       {
-        text: "Named customers include Pfizer, UBS, KPMG",
+        text: "Named customers include Pfizer, UBS, KPMG (per Robin AI marketing)",
         tag: "big-logos",
-        source: "https://www.startuphub.ai/startups/spellbook/alternatives",
+        illustrative: true,
       },
       {
         text: "GDPR + SOC 2 positioning; European enterprise buyers",
         tag: "product-features",
-        source: "https://www.startuphub.ai/startups/spellbook/alternatives",
+        illustrative: true,
       },
     ],
   },
@@ -153,7 +153,7 @@ export const competitors: Competitor[] = [
       {
         text: "Launched 'Institutional Memory' feature Jan 2026",
         tag: "product-features",
-        source: "https://www.streamline.ai/blog/best-ai-for-legal-teams",
+        illustrative: true,
       },
       {
         text: "UK-rooted; strong European enterprise footprint",
@@ -174,12 +174,12 @@ export const competitors: Competitor[] = [
       {
         text: "20,000+ users; agentic AI across Westlaw / Practical Law",
         tag: "big-logos",
-        source: "https://www.startuphub.ai/startups/spellbook/alternatives",
+        illustrative: true,
       },
       {
         text: "Bundled distribution through Thomson Reuters legal research",
         tag: "market-entry",
-        source: "https://www.startuphub.ai/startups/spellbook/alternatives",
+        illustrative: true,
       },
     ],
   },

@@ -28,11 +28,11 @@ export function LaunchBoard() {
             className={cn(
               "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium transition",
               view === "readiness"
-                ? "bg-bg-alt text-ink"
-                : "text-ink-muted hover:text-ink"
+                ? "bg-bg-alt text-ink ring-1 ring-border"
+                : "text-ink-muted hover:bg-bg-alt/40 hover:text-ink"
             )}
           >
-            <LayoutGrid size={12} strokeWidth={2.25} />
+            <LayoutGrid size={12} strokeWidth={2.25} aria-hidden="true" />
             Readiness grid
           </button>
           <button
@@ -40,11 +40,11 @@ export function LaunchBoard() {
             className={cn(
               "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-medium transition",
               view === "stage"
-                ? "bg-bg-alt text-ink"
-                : "text-ink-muted hover:text-ink"
+                ? "bg-bg-alt text-ink ring-1 ring-border"
+                : "text-ink-muted hover:bg-bg-alt/40 hover:text-ink"
             )}
           >
-            <Rows3 size={12} strokeWidth={2.25} />
+            <Rows3 size={12} strokeWidth={2.25} aria-hidden="true" />
             Stage board
           </button>
         </div>

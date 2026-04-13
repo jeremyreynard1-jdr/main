@@ -54,17 +54,34 @@ export default function IntelPage() {
         onClear={() => setActiveTags([])}
       />
 
-      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {visibleCompetitors.map((c) => (
-          <CompetitorCard
-            key={c.id}
-            c={c}
-            activeTags={activeTags}
-            onToggleCompare={toggleCompare}
-            comparing={compareIds.includes(c.id)}
-          />
-        ))}
-      </div>
+      {visibleCompetitors.length === 0 ? (
+        <div className="mt-8 rounded-card border border-dashed border-border bg-surface p-10 text-center">
+          <div className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-muted">
+            No matches
+          </div>
+          <p className="mt-2 text-[14px] text-ink">
+            None of the tracked competitors carry every selected signal.
+          </p>
+          <button
+            onClick={() => setActiveTags([])}
+            className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-alt px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink hover:border-gold/40 hover:text-gold"
+          >
+            Clear filters
+          </button>
+        </div>
+      ) : (
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {visibleCompetitors.map((c) => (
+            <CompetitorCard
+              key={c.id}
+              c={c}
+              activeTags={activeTags}
+              onToggleCompare={toggleCompare}
+              comparing={compareIds.includes(c.id)}
+            />
+          ))}
+        </div>
+      )}
 
       <CompareTray
         selected={selectedCompetitors}

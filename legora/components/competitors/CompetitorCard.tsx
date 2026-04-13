@@ -77,8 +77,8 @@ export function CompetitorCard({
       <p className="mt-3 text-[13.5px] leading-relaxed text-ink">{c.headline}</p>
 
       <div className="mt-4 space-y-2.5">
-        {visibleFacts.slice(0, expanded ? 99 : 3).map((f, i) => (
-          <div key={i} className="flex flex-col gap-1">
+        {visibleFacts.slice(0, expanded ? 99 : 3).map((f) => (
+          <div key={`${f.tag}:${f.text}`} className="flex flex-col gap-1">
             <div className="flex items-start gap-2">
               <span className="mt-1 size-1.5 shrink-0 rounded-full bg-gold" />
               <div className="flex-1 text-[12.5px] leading-relaxed text-ink">

@@ -36,6 +36,17 @@ button {
   font-family: inherit;
 }
 
+/* Accessible keyboard focus on all interactive elements. Mouse users
+   don't see it (focus-visible), keyboard users get a clear gold ring. */
+:where(a, button, [role="button"], input, select, textarea):focus {
+  outline: none;
+}
+:where(a, button, [role="button"], input, select, textarea):focus-visible {
+  outline: 2px solid rgba(212, 175, 122, 0.55);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
 /* Subtle grid background option for hero */
 .hero-grid {
   background-image: radial-gradient(

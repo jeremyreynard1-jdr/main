@@ -5,7 +5,9 @@ import { type Competitor } from "@/src/data/competitors";
 import { SourceLink } from "@/components/SourceLink";
 import { IllustrativeChip } from "@/components/IllustrativeChip";
 
-const rows: { key: keyof Competitor | "facts"; label: string }[] = [
+type StringKey = "positioning" | "threat" | "hq" | "founded";
+
+const rows: { key: StringKey; label: string }[] = [
   { key: "positioning", label: "Positioning" },
   { key: "threat", label: "Threat" },
   { key: "hq", label: "HQ" },
@@ -80,13 +82,13 @@ export function CompareTray({
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.key as string} className="border-b border-border/60 align-top">
+                <tr key={r.key} className="border-b border-border/60 align-top">
                   <td className="py-3 pr-4 font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-muted">
                     {r.label}
                   </td>
                   {selected.map((c) => (
                     <td key={c.id} className="px-3 py-3 text-ink">
-                      {(c[r.key as keyof Competitor] as string) || "—"}
+                      {c[r.key] || "—"}
                     </td>
                   ))}
                 </tr>
@@ -104,8 +106,8 @@ export function CompareTray({
                           <span className="text-ink-muted">—</span>
                         ) : (
                           <ul className="space-y-2">
-                            {facts.map((f, i) => (
-                              <li key={i} className="text-ink">
+                            {facts.map((f) => (
+                              <li key={`${c.id}:${f.text}`} className="text-ink">
                                 <div>{f.text}</div>
                                 <div className="mt-1">
                                   {f.illustrative ? (
