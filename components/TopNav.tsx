@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const tabs = [
@@ -14,6 +13,19 @@ const tabs = [
   { href: "/plan", label: "Plan" },
 ];
 
+function StarMark({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      className={className}
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M16 3 C16.4 9.5 22.5 15.6 29 16 C22.5 16.4 16.4 22.5 16 29 C15.6 22.5 9.5 16.4 3 16 C9.5 15.6 15.6 9.5 16 3 Z" />
+    </svg>
+  );
+}
+
 export function TopNav() {
   const pathname = usePathname();
   return (
@@ -21,20 +33,14 @@ export function TopNav() {
       <div className="mx-auto flex max-w-7xl items-stretch gap-6 overflow-x-auto px-4 nav-scroll md:px-6">
         <Link
           href="/"
-          className="flex shrink-0 items-center gap-2 py-4 text-[15px] leading-none text-ink tracking-tight"
+          className="flex shrink-0 items-center gap-2 py-4 leading-none"
         >
-          <Activity
-            size={16}
-            strokeWidth={2.25}
-            className="text-gold"
-            aria-hidden="true"
-          />
-          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-muted">
-            The
+          <StarMark className="size-4 text-gold" />
+          <span className="font-display text-[18px] tracking-tight text-ink">
+            Expansion Center
           </span>
-          <span className="font-semibold tracking-tight">Expansion Index</span>
         </Link>
-        <nav className="flex items-stretch gap-1 md:gap-2">
+        <nav className="flex items-stretch gap-1 md:gap-3">
           {tabs.map((t) => {
             const active =
               t.href === "/"
@@ -45,7 +51,7 @@ export function TopNav() {
                 key={t.href}
                 href={t.href}
                 className={cn(
-                  "relative flex items-center px-3 text-[13px] font-medium text-ink-muted transition hover:text-ink",
+                  "relative flex items-center px-3 text-[13.5px] font-medium text-ink-muted transition hover:text-ink",
                   active && "text-ink"
                 )}
               >

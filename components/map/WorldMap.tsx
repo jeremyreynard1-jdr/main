@@ -139,9 +139,9 @@ export function WorldMap() {
                   key={geo.rsmKey}
                   geography={geo}
                   style={{
-                    default: { fill: "#15203A", stroke: "#1E2A44", strokeWidth: 0.5, outline: "none" },
-                    hover: { fill: "#1A2746", stroke: "#2A3958", outline: "none" },
-                    pressed: { fill: "#1A2746", outline: "none" },
+                    default: { fill: "#EEEBE2", stroke: "#D8D3C3", strokeWidth: 0.5, outline: "none" },
+                    hover: { fill: "#E4EDDB", stroke: "#C9C3B4", outline: "none" },
+                    pressed: { fill: "#E4EDDB", outline: "none" },
                   }}
                 />
               ))
@@ -157,8 +157,8 @@ export function WorldMap() {
             >
               <circle
                 r={c.vendor === "legora" ? 5 : 4}
-                fill={c.vendor === "legora" ? "#D4AF7A" : "#E5534B"}
-                stroke="#0B1220"
+                fill={c.vendor === "legora" ? "#1F3D2E" : "#A8453F"}
+                stroke="#FFFFFF"
                 strokeWidth={1.5}
                 style={{ cursor: "pointer" }}
               />
@@ -175,7 +175,7 @@ export function WorldMap() {
               <circle
                 r={3.5}
                 fill="transparent"
-                stroke="#D4AF7A"
+                stroke="#1F3D2E"
                 strokeWidth={1.5}
                 strokeDasharray="2 2"
                 style={{ cursor: "pointer" }}
@@ -210,7 +210,7 @@ export function WorldMap() {
                     className="size-2 rounded-full"
                     style={{
                       background:
-                        hover.c.vendor === "legora" ? "#D4AF7A" : "#E5534B",
+                        hover.c.vendor === "legora" ? "#1F3D2E" : "#A8453F",
                     }}
                   />
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-muted">

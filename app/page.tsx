@@ -19,8 +19,8 @@ export default function HomePage() {
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <ModuleHeader
           eyebrow="Market Expansion · Operations"
-          title="The Expansion Index"
-          subtitle="An operating system for how Legora enters new markets, scales existing ones, and keeps leadership informed. Built as the artifact — not a deck — of what I&rsquo;d run in the Head of Market Expansion role."
+          title="Expansion Center"
+          subtitle="How Legora enters new markets, scales existing ones, and keeps leadership informed — as one operating system."
           right={<IllustrativeChip note="Cross-functional launch data is mock; public facts are sourced" />}
         />
 

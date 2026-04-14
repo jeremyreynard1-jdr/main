@@ -1,5 +1,5 @@
-// 30-60-90 day plan — the closer. Each milestone deep-links back to the
-// relevant module so Vilgot can see what the deliverable would actually be.
+// 30-60-90 day plan. Each milestone deep-links back to the relevant
+// module so the deliverable is a real surface, not a line on a deck.
 
 export type Milestone = {
   id: string;
@@ -90,7 +90,7 @@ export const milestones: Milestone[] = [
       "Hand off a portable operating system: Control Center + 4 playbooks + rhythm + signals.",
     deliverable: "Expansion OS v1 published internally",
     successMetric:
-      "New launches onboarded in < 2 weeks; Vilgot + exec use it without me",
+      "New launches onboarded in < 2 weeks; leadership uses it unprompted",
     linkTo: { href: "/", label: "Control Center" },
   },
 ];

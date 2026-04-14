@@ -1,5 +1,5 @@
-// Operating cadence I'd install as Head of Market Expansion.
-// Illustrative — these are the rhythms, frequencies, and artifacts I'd propose.
+// Operating cadence for the Expansion function.
+// Illustrative — rhythms, frequencies, and artifacts proposed as a starting point.
 
 export type Cadence = "Weekly" | "Biweekly" | "Monthly" | "Quarterly";
 

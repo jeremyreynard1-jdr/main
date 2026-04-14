@@ -21,8 +21,7 @@ export function RhythmCalendar() {
             Operating rhythm
           </h2>
           <p className="mt-1 text-[13px] text-ink-muted">
-            The cadence I&rsquo;d install on day 1 — how decisions get made,
-            weekly, monthly, quarterly.
+            How decisions get made on a week, month, and quarter basis.
           </p>
         </div>
       </div>
